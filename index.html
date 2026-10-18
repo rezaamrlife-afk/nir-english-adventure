@@ -48,6 +48,9 @@ p{margin:0;line-height:1.35;font-size:clamp(14px,3.4vh,18px)}
 .st div{background:#efeeff;border-radius:12px;padding:6px 2px;font-size:12px}.st b{display:block;font-size:20px}
 .chips{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;font-size:13px;font-weight:700}
 .cr{font-size:12px;opacity:.9;line-height:1.5}.cr a{color:#ffc93c;font-weight:700;margin:0 4px}#rc .cr{color:#5a58a6}#rc .cr a{color:#1d4fb3}
+.spk{min-width:44px;min-height:44px;border-radius:50%;border:3px solid #5a58a6;background:#fff;font-size:20px;padding:0;color:#1d1a5c}
+.tl{font-size:clamp(13px,3.2vh,17px);line-height:1.4;color:#5a58a6;font-weight:700}.tl:empty{display:none}
+.qrow{display:flex;align-items:center;justify-content:center;gap:10px}
 .chips span{background:#ffe9a8;border-radius:999px;padding:2px 10px}
 </style>
 </head>
@@ -61,14 +64,14 @@ p{margin:0;line-height:1.35;font-size:clamp(14px,3.4vh,18px)}
  <h1>NIR English Adventure</h1><div class="sub">Play. Learn. Explore.</div>
  <div id="lv"></div>
  <p>Run, jump, collect coins and words. Answer the ? checkpoints.</p>
- <div class="row"><button class="pb sec" id="sn">Sound: On</button></div>
+ <div class="row"><button class="pb sec" id="sn">Sound: On</button><button class="pb sec" id="lg">Hints: English only</button></div>
  <p class="cr" id="cr1"></p>
  <p class="rot">Tip: turn your phone sideways for the best view.</p>
 </div></div>
 
 <div class="scr" id="pause"><div class="card"><h2>Paused</h2><div class="row"><button class="pb" id="rs">Resume</button><button class="pb sec" id="rt">Restart level</button><button class="pb sec" id="mn">Menu</button></div></div></div>
 
-<div class="scr" id="qz"><div class="card" id="qc"><div id="qh"></div><canvas id="qi" width="72" height="72"></canvas><div id="qp"></div><div id="qa"></div><div id="qf" role="status" aria-live="polite"></div><button class="pb" id="qn" style="display:none">Continue</button></div></div>
+<div class="scr" id="qz"><div class="card" id="qc"><div id="qh"></div><canvas id="qi" width="72" height="72"></canvas><div class="qrow"><div id="qp"></div><button class="spk" id="qs" aria-label="Listen">🔊</button></div><div class="tl" id="qt"></div><div id="qa"></div><div id="qf" role="status" aria-live="polite"></div><button class="pb" id="qn" style="display:none">Continue</button></div></div>
 
 <div class="scr" id="res"><div class="card" id="rc">
  <div class="logo"><svg width="28" height="28" viewBox="0 0 34 34"><rect width="34" height="34" rx="9" fill="#2a2466"/><path d="M9 25V9l16 16V9" fill="none" stroke="#ffc93c" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/></svg>NIR Academy</div>
@@ -100,12 +103,16 @@ $('cr1').innerHTML=h;$('cr2').innerHTML=h;})();
 
 /* ---------- saved progress ---------- */
 const KEY='nirEnglishAdventure.v1';
-let sv={unlocked:1,best:{},mute:0};
-try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&typeof s==='object'){sv.unlocked=Math.max(1,s.unlocked|0);sv.best=(s.best&&typeof s.best==='object')?s.best:{};sv.mute=s.mute?1:0;}}catch(e){}
+const dl=(navigator.language||'').slice(0,2);
+let sv={unlocked:1,best:{},mute:0,lang:dl==='fa'?'fa':dl==='tr'?'tr':'en'};
+try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&typeof s==='object'){sv.unlocked=Math.max(1,s.unlocked|0);sv.best=(s.best&&typeof s.best==='object')?s.best:{};sv.mute=s.mute?1:0;if(['en','fa','tr'].includes(s.lang))sv.lang=s.lang;}}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(sv));}catch(e){}};
 
-/* ---------- audio ---------- */
+/* ---------- audio + speech ---------- */
 let AC=null;
+const TTS='speechSynthesis' in window&&typeof SpeechSynthesisUtterance!=='undefined';
+function say(t){if(!TTS||sv.mute||!t)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.85;speechSynthesis.speak(u);}catch(e){}}
+function hush(){if(TTS)try{speechSynthesis.cancel();}catch(e){}}
 function sfx(f,d,type,v,slide){
   if(!AC||sv.mute)return;try{
     const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime;
@@ -115,41 +122,75 @@ function sfx(f,d,type,v,slide){
     o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d);
   }catch(e){}
 }
-function setMute(m){sv.mute=m?1:0;$('M').classList.toggle('off',!!sv.mute);$('sn').textContent='Sound: '+(sv.mute?'Off':'On');save();}
+function setMute(m){sv.mute=m?1:0;if(sv.mute)hush();$('M').classList.toggle('off',!!sv.mute);$('sn').textContent='Sound: '+(sv.mute?'Off':'On');save();}
+const LGS=['en','fa','tr'],LGN={en:'English only',fa:'فارسی',tr:'Türkçe'};
+function setLang(l){sv.lang=l;$('lg').textContent='Hints: '+LGN[l];save();}
+const tl=(q,k)=>{const l=q.l&&q.l[sv.lang];return l?l[k]:'';};
+const UI={fa:['درست بود!','اشتباه بود، ولی قلبی کم نشد.'],tr:['Doğru!','Olmadı ama can kaybetmedin.']};
 
 /* ---------- learning content (add B1 levels by appending to LV) ---------- */
-const Q=(t,q,a,w1,w2,ex,x)=>({t,q,a,o:[a,w1,w2],ex,x,w:a});
-const B=(q,words,ex,w)=>({t:'build',q,words,a:words.join(' ')+'.',ex,w});
+const TT=(fq,fe,tq,te)=>({fa:[fq,fe],tr:[tq,te]});
+const Q=(t,q,a,w1,w2,ex,x,l)=>({t,q,a,o:[a,w1,w2],ex,x,w:a,l});
+const B=(q,words,ex,w,l)=>({t:'build',q,words,a:words.join(' ')+'.',ex,w,l});
+const BQ=['کلمه‌ها را به ترتیب بچین.','Kelimeleri sıraya koy.'];
+const WHAT=['این چیست؟','Bu nedir?'],COL=['این چه رنگی است؟','Bu hangi renk?'];
+/* Each level has a pool of questions. A random 5 are picked every time the level starts. */
 const LV=[
  {n:'Everyday words',cefr:'A1',sky:['#2f7bff','#8fd3ff','#ffd9a8'],hl:['#9fa9ee','#6fc3c9','#43a98a'],
   words:['house','book','school','day','pen','family'],qs:[
-  Q('pic','What is this?','house','tree','cup','A house is a place where people live.','house'),
-  Q('pic','What is this?','book','cup','fish','You read a book.','book'),
-  Q('mc','Where do students study?','school','river','moon','Students study at school.'),
-  Q('fill','I go to school every ___.','day','blue','run','"Every day" means each day.'),
-  Q('mc','What do you use to write?','pen','shoe','door','You write with a pen.')]},
+  Q('pic','What is this?','house','tree','cup','A house is a place where people live.','house',TT(WHAT[0],'house یعنی خانه. خانه جایی است که مردم در آن زندگی می‌کنند.',WHAT[1],'House “ev” demektir. Ev, insanların yaşadığı yerdir.')),
+  Q('pic','What is this?','book','cup','fish','You read a book.','book',TT(WHAT[0],'book یعنی کتاب. کتاب می‌خوانید.',WHAT[1],'Book “kitap” demektir. Kitap okursun.')),
+  Q('pic','What is this?','cup','house','tree','You drink tea from a cup.','cup',TT(WHAT[0],'cup یعنی فنجان یا لیوان. چای را از فنجان می‌نوشید.',WHAT[1],'Cup “fincan” demektir. Çayı fincandan içersin.')),
+  Q('pic','What is this?','tree','cup','fish','A tree has leaves.','tree',TT(WHAT[0],'tree یعنی درخت. درخت برگ دارد.',WHAT[1],'Tree “ağaç” demektir. Ağacın yaprakları vardır.')),
+  Q('mc','Where do students study?','school','river','moon','Students study at school.',null,TT('دانش‌آموزان کجا درس می‌خوانند؟','school یعنی مدرسه.','Öğrenciler nerede ders çalışır?','School “okul” demektir.')),
+  Q('mc','What do you use to write?','pen','shoe','door','You write with a pen.',null,TT('برای نوشتن از چه چیزی استفاده می‌کنید؟','pen یعنی خودکار. با خودکار می‌نویسید.','Yazmak için ne kullanırsın?','Pen “kalem” demektir. Kalemle yazarsın.')),
+  Q('mc','What do you open to enter a room?','door','pen','cup','You open a door to enter a room.',null,TT('برای وارد شدن به اتاق چه چیزی را باز می‌کنید؟','door یعنی در. برای ورود به اتاق در را باز می‌کنید.','Bir odaya girmek için neyi açarsın?','Door “kapı” demektir. Odaya girmek için kapıyı açarsın.')),
+  Q('fill','I go to school every ___.','day','blue','run','"Every day" means each day.',null,TT('من هر ___ به مدرسه می‌روم.','every day یعنی هر روز.','Her ___ okula giderim.','Every day “her gün” demektir.')),
+  Q('fill','There are seven ___ in a week.','days','pens','books','A week has seven days.',null,TT('در یک هفته هفت ___ وجود دارد.','day یعنی روز. یک هفته هفت روز دارد.','Bir haftada yedi ___ vardır.','Day “gün” demektir. Bir haftada yedi gün vardır.')),
+  Q('fill','I live with my ___: mother, father and sister.','family','pen','door','Your family is the people you live with.',null,TT('من با ___ خودم زندگی می‌کنم: مادر، پدر و خواهر.','family یعنی خانواده.','Annem, babam ve kız kardeşimle, yani ___ ile yaşıyorum.','Family “aile” demektir.'))]},
  {n:'Food, animals, colors',cefr:'A1',sky:['#ff7a8a','#ffb58a','#ffe6a8'],hl:['#d99bd0','#e8a07a','#79b86a'],
   words:['apple','fish','blue','dog','banana','bread'],qs:[
-  Q('pic','What is this?','apple','house','book','An apple is a fruit.','apple'),
-  Q('pic','What is this?','fish','tree','cup','A fish lives in water.','fish'),
-  Q('pic','What colour is this?','blue','red','green','The sky is often blue.','#2f6bff'),
-  Q('mc','Which animal can bark?','dog','fish','bird','A dog can bark. Fish and birds cannot.'),
-  Q('mc','Which one is a fruit?','banana','bread','milk','A banana is a fruit. Bread and milk are not.')]},
+  Q('pic','What is this?','apple','house','book','An apple is a fruit.','apple',TT(WHAT[0],'apple یعنی سیب. سیب یک میوه است.',WHAT[1],'Apple “elma” demektir. Elma bir meyvedir.')),
+  Q('pic','What is this?','fish','tree','cup','A fish lives in water.','fish',TT(WHAT[0],'fish یعنی ماهی. ماهی در آب زندگی می‌کند.',WHAT[1],'Fish “balık” demektir. Balık suda yaşar.')),
+  Q('pic','What colour is this?','blue','red','green','The sky is often blue.','#2f6bff',TT(COL[0],'blue یعنی آبی. آسمان اغلب آبی است.',COL[1],'Blue “mavi” demektir. Gökyüzü çoğu zaman mavidir.')),
+  Q('pic','What colour is this?','red','blue','green','A tomato is red.','#e8344e',TT(COL[0],'red یعنی قرمز. گوجه‌فرنگی قرمز است.',COL[1],'Red “kırmızı” demektir. Domates kırmızıdır.')),
+  Q('pic','What colour is this?','green','red','yellow','Grass is green.','#2fae55',TT(COL[0],'green یعنی سبز. چمن سبز است.',COL[1],'Green “yeşil” demektir. Çimen yeşildir.')),
+  Q('pic','What colour is this?','yellow','blue','red','A banana is yellow.','#ffd84a',TT(COL[0],'yellow یعنی زرد. موز زرد است.',COL[1],'Yellow “sarı” demektir. Muz sarıdır.')),
+  Q('mc','Which animal can bark?','dog','fish','bird','A dog can bark. Fish and birds cannot.',null,TT('کدام حیوان می‌تواند پارس کند؟','dog یعنی سگ. سگ پارس می‌کند؛ ماهی و پرنده نمی‌کنند.','Hangi hayvan havlayabilir?','Dog “köpek” demektir. Köpek havlar; balık ve kuş havlamaz.')),
+  Q('mc','Which animal says "meow"?','cat','dog','fish','A cat says meow.',null,TT('کدام حیوان «میو» می‌کند؟','cat یعنی گربه. گربه میو می‌کند.','Hangi hayvan “miyav” der?','Cat “kedi” demektir. Kedi miyav der.')),
+  Q('mc','Which animal can fly?','bird','dog','fish','Birds have wings, so they can fly.',null,TT('کدام حیوان می‌تواند پرواز کند؟','bird یعنی پرنده. پرنده بال دارد و پرواز می‌کند.','Hangi hayvan uçabilir?','Bird “kuş” demektir. Kuşun kanatları vardır, uçabilir.')),
+  Q('mc','Which one is a fruit?','banana','bread','milk','A banana is a fruit. Bread and milk are not.',null,TT('کدام یک میوه است؟','banana یعنی موز. موز میوه است؛ نان و شیر میوه نیستند.','Hangisi bir meyvedir?','Banana “muz” demektir. Muz meyvedir; ekmek ve süt değildir.')),
+  Q('mc','Which one do we drink?','milk','bread','apple','We drink milk. We eat bread and apples.',null,TT('کدام را می‌نوشیم؟','milk یعنی شیر. شیر می‌نوشیم؛ نان و سیب می‌خوریم.','Hangisini içeriz?','Milk “süt” demektir. Süt içeriz; ekmek ve elma yeriz.')),
+  Q('fill','I eat an ___ every day.','apple','dog','blue','You can eat an apple. We use "an" before a vowel sound.',null,TT('من هر روز یک ___ می‌خورم.','apple یعنی سیب. قبل از صدای مصوت از an استفاده می‌کنیم.','Her gün bir ___ yerim.','Apple “elma” demektir. Ünlü sesinden önce “an” kullanırız.'))]},
  {n:'Actions and sentences',cefr:'A1+',sky:['#17a58f','#7fe0c8','#f4f0b0'],hl:['#7fb0e8','#4fbfa6','#3a9a62'],
   words:['fly','drink','read','small','run','sleep'],qs:[
-  Q('fill','Birds can ___ in the sky.','fly','swim','cook','Birds have wings, so they can fly.'),
-  Q('fill','We ___ water when we are thirsty.','drink','eat','read','We drink water.'),
-  B('Put the words in order.',['The','cat','is','small'],'First the subject (the cat), then "is", then the describing word.','small'),
-  Q('mc',"What is the opposite of 'big'?",'small','tall','fast','Big and small are opposites.'),
-  Q('mc','What do you do with a book?','read','drink','wear','You read a book.')]},
+  Q('fill','Birds can ___ in the sky.','fly','swim','cook','Birds have wings, so they can fly.',null,TT('پرنده‌ها می‌توانند در آسمان ___ کنند.','fly یعنی پرواز کردن. پرنده‌ها بال دارند.','Kuşlar gökyüzünde ___ bilir.','Fly “uçmak” demektir. Kuşların kanatları vardır.')),
+  Q('fill','We ___ water when we are thirsty.','drink','eat','read','We drink water.',null,TT('وقتی تشنه‌ایم آب ___.','drink یعنی نوشیدن.','Susayınca su ___.','Drink “içmek” demektir.')),
+  Q('fill','I ___ in my bed at night.','sleep','drink','fly','We sleep at night.',null,TT('شب‌ها در تختم ___.','sleep یعنی خوابیدن.','Geceleri yatağımda ___.','Sleep “uyumak” demektir.')),
+  Q('fill','The dog can ___ very fast.','run','sleep','read','Dogs can run very fast.',null,TT('سگ می‌تواند خیلی تند ___.','run یعنی دویدن.','Köpek çok hızlı ___ bilir.','Run “koşmak” demektir.')),
+  Q('fill','Fish can ___ in water.','swim','fly','read','Fish swim in water.',null,TT('ماهی‌ها می‌توانند در آب ___ کنند.','swim یعنی شنا کردن.','Balıklar suda ___ bilir.','Swim “yüzmek” demektir.')),
+  B('Put the words in order.',['The','cat','is','small'],'First the subject (the cat), then "is", then the describing word.','small',TT(BQ[0],'اول فاعل (the cat)، بعد is، بعد کلمه‌ی توصیفی. The cat is small یعنی گربه کوچک است.',BQ[1],'Önce özne (the cat), sonra “is”, sonra niteleyen kelime. The cat is small “Kedi küçük” demektir.')),
+  B('Put the words in order.',['I','can','run','fast'],'First I, then "can", then the action word.','run',TT(BQ[0],'اول I، بعد can، بعد فعل. I can run fast یعنی من می‌توانم تند بدوم.',BQ[1],'Önce I, sonra “can”, sonra eylem. I can run fast “Hızlı koşabilirim” demektir.')),
+  B('Put the words in order.',['She','reads','a','book'],'With "she", the verb takes -s: reads.','read',TT(BQ[0],'با she فعل s می‌گیرد: reads. She reads a book یعنی او کتاب می‌خواند.',BQ[1],'“She” ile fiil -s alır: reads. She reads a book “O bir kitap okuyor” demektir.')),
+  Q('mc',"What is the opposite of 'big'?",'small','tall','fast','Big and small are opposites.',null,TT('متضاد big چیست؟','big یعنی بزرگ و small یعنی کوچک.','“Big” kelimesinin zıt anlamlısı nedir?','Big “büyük”, small “küçük” demektir.')),
+  Q('mc',"What is the opposite of 'hot'?",'cold','red','tall','Hot and cold are opposites.',null,TT('متضاد hot چیست؟','hot یعنی داغ و cold یعنی سرد.','“Hot” kelimesinin zıt anlamlısı nedir?','Hot “sıcak”, cold “soğuk” demektir.')),
+  Q('mc','What do you do with a book?','read','drink','wear','You read a book.',null,TT('با کتاب چه کار می‌کنید؟','read یعنی خواندن.','Kitapla ne yaparsın?','Read “okumak” demektir.'))]},
  {n:'Basic grammar',cefr:'A2',sky:['#5a3fc0','#a78bf0','#ffc6e0'],hl:['#b79af0','#8a7ad8','#5a9a9a'],
   words:['is','am','are','goes','friends','bus'],qs:[
-  Q('fill','She ___ happy.','is','are','am','Use "is" with she, he, and it.'),
-  Q('fill','I ___ a student.','am','is','are','Use "am" with I.'),
-  Q('fill','They ___ playing football.','are','is','am','Use "are" with they, we, and you.'),
-  B('Make a sentence.',['We','are','good','friends'],'Use "are" after "we".','friends'),
-  Q('fill','He ___ to school by bus.','goes','go','going','With he, she, or it, we say "goes".')]}
+  Q('fill','She ___ happy.','is','are','am','Use "is" with she, he, and it.',null,TT('او خوشحال است.','با she، he و it از is استفاده می‌کنیم.','O mutlu.','She, he ve it ile “is” kullanılır.')),
+  Q('fill','I ___ a student.','am','is','are','Use "am" with I.',null,TT('من یک دانش‌آموز هستم.','با I از am استفاده می‌کنیم.','Ben bir öğrenciyim.','I ile “am” kullanılır.')),
+  Q('fill','They ___ playing football.','are','is','am','Use "are" with they, we, and you.',null,TT('آن‌ها فوتبال بازی می‌کنند.','با they، we و you از are استفاده می‌کنیم.','Onlar futbol oynuyor.','They, we ve you ile “are” kullanılır.')),
+  Q('fill','It ___ a big dog.','is','are','am','Use "is" with it.',null,TT('آن یک سگ بزرگ است.','با it از is استفاده می‌کنیم.','O büyük bir köpek.','It ile “is” kullanılır.')),
+  Q('fill','You ___ my friend.','are','is','am','Use "are" with you.',null,TT('تو دوست من هستی.','با you از are استفاده می‌کنیم.','Sen benim arkadaşımsın.','You ile “are” kullanılır.')),
+  Q('fill','My sister ___ a teacher.','is','are','am','My sister is one person (she), so we use "is".',null,TT('خواهر من معلم است.','sister یک نفر است (she)، پس از is استفاده می‌کنیم.','Kız kardeşim öğretmen.','Sister tek kişidir (she), bu yüzden “is” kullanırız.')),
+  Q('fill','We ___ at home now.','are','is','am','Use "are" with we.',null,TT('ما الان در خانه‌ایم.','با we از are استفاده می‌کنیم.','Şimdi evdeyiz.','We ile “are” kullanılır.')),
+  Q('fill','He ___ to school by bus.','goes','go','going','With he, she, or it, we say "goes".',null,TT('او با اتوبوس به مدرسه می‌رود.','با he، she و it فعل s می‌گیرد: goes.','O okula otobüsle gider.','He, she ve it ile fiile -s/-es eklenir: goes.')),
+  Q('fill','She ___ milk every morning.','drinks','drink','drinking','With she, the verb takes -s: drinks.',null,TT('او هر صبح شیر می‌نوشد.','با she فعل s می‌گیرد: drinks.','O her sabah süt içer.','“She” ile fiil -s alır: drinks.')),
+  Q('fill','My brother ___ English at school.','studies','study','studying','With he, "study" becomes "studies" (y changes to ies).',null,TT('برادر من در مدرسه انگلیسی می‌خواند.','با he، study به studies تبدیل می‌شود (y به ies).','Kardeşim okulda İngilizce çalışır.','He ile “study”, “studies” olur (y, ies’e dönüşür).')),
+  B('Make a sentence.',['We','are','good','friends'],'Use "are" after "we".','friends',TT('یک جمله بساز.','بعد از we از are استفاده می‌کنیم. We are good friends یعنی ما دوستان خوبی هستیم.','Bir cümle kur.','“We” den sonra “are” kullanılır. We are good friends “İyi arkadaşız” demektir.')),
+  B('Make a sentence.',['He','likes','football'],'Subject, then the verb with -s, then the object.','likes',TT('یک جمله بساز.','اول فاعل، بعد فعل با s، بعد مفعول. He likes football یعنی او فوتبال را دوست دارد.','Bir cümle kur.','Önce özne, sonra -s’li fiil, sonra nesne. He likes football “O futbolu sever” demektir.'))]}
 ];
+let qsel=[];
 
 /* ---------- level layout (shared by all levels) ---------- */
 const segs=[[0,900],[1000,1700],[1800,2600],[2700,3500],[3600,4300],[4400,5400]];
@@ -167,7 +208,7 @@ for(let x=140,i=0;x<LEN;x+=150+(i*53%90),i++){if(segs.some(s=>x>s[0]+30&&x<s[1]-
 
 let p,hearts,coinN,coinTot,coinL,slimes,wtok,parts=[],shake=0,score,corr,asked,seen,cpDone,toast={t:0,s:''},winT=0;
 function reset(i){
-  cur=i;
+  cur=i;qsel=shuffle(LV[i].qs.slice()).slice(0,CP.length);
   p={x:60,y:GY,vx:0,vy:0,f:1,g:true,ph:0,inv:0,coy:0,buf:0,safe:60,gy:GY,sq:0};
   hearts=3;coinN=0;score=0;corr=0;asked=0;seen=new Set();cpDone=[];parts=[];cam=0;winT=0;toast.t=0;
   coinL=[];
@@ -234,6 +275,7 @@ function start(i){
   try{if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('landscape').catch(()=>{});}catch(e){}
   relAll();reset(i);state='play';show('');ctl(1);sfx(520,.15,'square',.05,900);
 }
+$('lg').onclick=()=>setLang(LGS[(LGS.indexOf(sv.lang)+1)%3]);
 $('sn').onclick=()=>setMute(!sv.mute);$('M').onclick=()=>setMute(!sv.mute);
 $('P').onclick=pause;$('rs').onclick=resume;$('rt').onclick=()=>start(cur);$('mn').onclick=menu;
 $('rp').onclick=()=>start(cur);$('rn').onclick=()=>start(cur+1);$('rmn').onclick=menu;
@@ -252,9 +294,9 @@ const IC={
 let qi=0,qdone=false;
 function openQuiz(i){
   qi=i;qdone=false;state='qz';relAll();ctl(0);
-  const q=LV[cur].qs[i];
-  $('qh').textContent=`Question ${i+1} of ${LV[cur].qs.length} · ${q.t==='pic'?'Picture':q.t==='build'?'Build a sentence':q.t==='fill'?'Complete the sentence':'Vocabulary'}`;
-  $('qp').textContent=q.q;$('qf').innerHTML='';$('qn').style.display='none';
+  const q=qsel[i];
+  $('qh').textContent=`Question ${i+1} of ${qsel.length} · ${q.t==='pic'?'Picture':q.t==='build'?'Build a sentence':q.t==='fill'?'Complete the sentence':'Vocabulary'}`;
+  $('qp').textContent=q.q;$('qt').textContent=tl(q,0);$('qt').dir=sv.lang==='fa'?'rtl':'ltr';$('qs').style.display=TTS?'inline-block':'none';$('qf').innerHTML='';$('qn').style.display='none';
   const ic=$('qi');ic.style.display=q.t==='pic'?'block':'none';
   if(q.t==='pic'){const g=ic.getContext('2d');g.clearRect(0,0,72,72);if(q.x[0]==='#')IC.sw(g,q.x);else IC[q.x](g);}
   const a=$('qa');a.innerHTML='';
@@ -273,14 +315,17 @@ function buildUI(q,a){
   a.append(bs,bc,u);
 }
 function finishQ(ok,btn){
-  qdone=true;const q=LV[cur].qs[qi];asked++;seen.add(q.w);
+  qdone=true;const q=qsel[qi];asked++;seen.add(q.w);
   document.querySelectorAll('#qa .ans').forEach(b=>{b.disabled=true;if(q.t!=='build'){if(b.textContent===q.a){b.classList.add('good');b.textContent='✓ '+b.textContent;}else if(b===btn){b.classList.add('bad');b.textContent='✗ '+b.textContent;}}});
   if(ok){corr++;score+=100;sfx(660,.12,'square',.05,990);setTimeout(()=>sfx(990,.2,'square',.05,1320),130);}else sfx(200,.3,'sawtooth',.05,120);
-  $('qf').innerHTML=(ok?'<b class="ok">✓ Correct! +100 points.</b> ':'<b class="no">✗ Not quite. No hearts lost.</b> ')+`The answer is <b>${q.a}</b>. ${q.ex}`;
+  $('qf').innerHTML=(ok?'<b class="ok">✓ Correct! +100 points.</b> ':'<b class="no">✗ Not quite. No hearts lost.</b> ')+`The answer is <b>${q.a}</b>. ${q.ex}`+(sv.lang!=='en'&&q.l?`<div class="tl" dir="${sv.lang==='fa'?'rtl':'ltr'}">💡 ${UI[sv.lang][ok?0:1]} ${tl(q,1)}</div>`:'');
+  setTimeout(()=>say(spkText()),ok?400:150);
   const n=$('qn');n.style.display='inline-block';n.textContent=qi===CP.length-1?'Continue to the flag':'Continue';
 }
+const spkText=()=>{const q=qsel[qi];return qdone?(q.t==='fill'?q.q.replace('___',q.a):q.a):(q.t==='fill'?q.q.replace('___','blank'):q.q);};
+$('qs').onclick=()=>say(spkText());
 $('qn').onclick=()=>{
-  if(state!=='qz'||!qdone)return;
+  if(state!=='qz'||!qdone)return;hush();
   cpDone[qi]=true;p.safe=Math.max(p.safe,CP[qi]);p.buf=0;p.inv=Math.max(p.inv,.6);
   show('');ctl(1);state='play';syncKeys();sfx(520,.1,'square',.04,780);
 };
@@ -345,7 +390,7 @@ function update(dt){
     return;
   }
   for(const c of coinL)if(!c.got&&Math.abs(c.x-p.x)<18&&Math.abs(c.y-(p.y-18))<24){c.got=1;coinN++;score+=10;spawn(c.x,c.y,6,'#ffd84a',70);sfx(880,.12,'square',.04,1320);}
-  for(const w of wtok)if(!w.got&&Math.abs(w.x-p.x)<26&&Math.abs(w.y-(p.y-18))<26){w.got=1;seen.add(w.w);score+=50;toast.t=1.6;toast.s='New word: '+w.w;spawn(w.x,w.y,8,'#8fe3ff',80);sfx(740,.1,'triangle',.05,1100);}
+  for(const w of wtok)if(!w.got&&Math.abs(w.x-p.x)<26&&Math.abs(w.y-(p.y-18))<26){w.got=1;seen.add(w.w);score+=50;toast.t=1.6;toast.s='New word: '+w.w;say(w.w);spawn(w.x,w.y,8,'#8fe3ff',80);sfx(740,.1,'triangle',.05,1100);}
   for(const [x,w] of spikeL)if(p.y>GY-14&&p.x+8>x&&p.x-8<x+w)hurt(-p.f);
   for(const s of slimes){
     if(!s.alive)continue;
@@ -495,7 +540,7 @@ function draw(){
 }
 
 /* ---------- main loop ---------- */
-reset(0);setMute(sv.mute);menu();
+reset(0);setMute(sv.mute);setLang(sv.lang);menu();
 let last=performance.now();
 function frame(t){
   requestAnimationFrame(frame);
