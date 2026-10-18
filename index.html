@@ -19,6 +19,7 @@ button{font-family:inherit;touch-action:manipulation}
 .scr{position:fixed;inset:0;display:none;background:rgba(24,20,80,.78);overflow:auto;padding:8px;box-sizing:border-box;z-index:5}
 .scr.on{display:flex}
 .card{margin:auto;width:min(96vw,640px);text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px}
+.lgi{max-width:180px;width:auto;object-fit:contain;background:#fff;border-radius:10px;padding:3px}
 .logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:17px}
 h1{margin:0;font-size:clamp(26px,8vh,52px);line-height:1.05;font-weight:900;text-shadow:0 3px 0 #ff7a3d,0 6px 0 rgba(0,0,0,.3)}
 h2{margin:0;font-size:clamp(22px,6vh,36px);font-weight:900}
@@ -60,7 +61,7 @@ p{margin:0;line-height:1.35;font-size:clamp(14px,3.4vh,18px)}
 <div id="hud"><button id="P" aria-label="Pause">❚❚</button><button id="M" aria-label="Sound on or off">♪</button></div>
 
 <div class="scr" id="menu"><div class="card">
- <div class="logo"><svg width="34" height="34" viewBox="0 0 34 34"><rect width="34" height="34" rx="9" fill="#ffc93c"/><path d="M9 25V9l16 16V9" fill="none" stroke="#2a2466" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/></svg>NIR Academy</div>
+ <div class="logo"><img class="lgi" style="height:44px" src="https://niracademy.com/wp-content/uploads/2026/05/Logo-1.jpeg" alt="NIR Academy" onload="this.nextElementSibling.style.display='none'" onerror="this.remove()"><svg width="34" height="34" viewBox="0 0 34 34"><rect width="34" height="34" rx="9" fill="#ffc93c"/><path d="M9 25V9l16 16V9" fill="none" stroke="#2a2466" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/></svg>NIR Academy</div>
  <h1>NIR English Adventure</h1><div class="sub">Play. Learn. Explore.</div>
  <div id="lv"></div>
  <p>Run, jump, collect coins and words. Answer the ? checkpoints.</p>
@@ -74,7 +75,7 @@ p{margin:0;line-height:1.35;font-size:clamp(14px,3.4vh,18px)}
 <div class="scr" id="qz"><div class="card" id="qc"><div id="qh"></div><canvas id="qi" width="72" height="72"></canvas><div class="qrow"><div id="qp"></div><button class="spk" id="qs" aria-label="Listen">🔊</button></div><div class="tl" id="qt"></div><div id="qa"></div><div id="qf" role="status" aria-live="polite"></div><button class="pb" id="qn" style="display:none">Continue</button></div></div>
 
 <div class="scr" id="res"><div class="card" id="rc">
- <div class="logo"><svg width="28" height="28" viewBox="0 0 34 34"><rect width="34" height="34" rx="9" fill="#2a2466"/><path d="M9 25V9l16 16V9" fill="none" stroke="#ffc93c" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/></svg>NIR Academy</div>
+ <div class="logo"><img class="lgi" style="height:36px" src="https://niracademy.com/wp-content/uploads/2026/05/Logo-1.jpeg" alt="NIR Academy" onload="this.nextElementSibling.style.display='none'" onerror="this.remove()"><svg width="28" height="28" viewBox="0 0 34 34"><rect width="34" height="34" rx="9" fill="#2a2466"/><path d="M9 25V9l16 16V9" fill="none" stroke="#ffc93c" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/></svg>NIR Academy</div>
  <h2 id="rh"></h2><div class="st" id="rst"></div><p id="rm"></p><div class="chips" id="rw"></div>
  <p class="cr" id="cr2"></p>
  <div class="row"><button class="pb" id="rp">Replay level</button><button class="pb" id="rn">Next level</button><button class="pb sec" id="rmn">Menu</button></div>
