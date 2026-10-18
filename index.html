@@ -49,6 +49,7 @@ p{margin:0;line-height:1.35;font-size:clamp(14px,3.4vh,18px)}
 .st div{background:#efeeff;border-radius:12px;padding:6px 2px;font-size:12px}.st b{display:block;font-size:20px}
 .chips{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;font-size:13px;font-weight:700}
 .cr{font-size:12px;opacity:.9;line-height:1.5}.cr a{color:#ffc93c;font-weight:700;margin:0 4px}#rc .cr{color:#5a58a6}#rc .cr a{color:#1d4fb3}
+.lgb{font:800 15px system-ui,sans-serif;min-height:40px;padding:0 16px;border-radius:999px;border:2px solid #ffc93c;background:transparent;color:#fff}.lgb.on{background:#ffc93c;color:#3a2200}
 .spk{min-width:44px;min-height:44px;border-radius:50%;border:3px solid #5a58a6;background:#fff;font-size:20px;padding:0;color:#1d1a5c}
 .tl{font-size:clamp(13px,3.2vh,17px);line-height:1.4;color:#5a58a6;font-weight:700}.tl:empty{display:none}
 .qrow{display:flex;align-items:center;justify-content:center;gap:10px}
@@ -57,20 +58,21 @@ p{margin:0;line-height:1.35;font-size:clamp(14px,3.4vh,18px)}
 </head>
 <body>
 <canvas id="c"></canvas>
-<div class="btn" id="L" aria-label="Left">◀</div><div class="btn" id="R" aria-label="Right">▶</div><div class="btn" id="J">JUMP</div>
+<div class="btn" id="L" aria-label="Left">◀</div><div class="btn" id="R" aria-label="Right">▶</div><div class="btn" id="J" data-i="jump">JUMP</div>
 <div id="hud"><button id="P" aria-label="Pause">❚❚</button><button id="M" aria-label="Sound on or off">♪</button></div>
 
 <div class="scr" id="menu"><div class="card">
  <div class="logo"><img class="lgi" style="height:44px" src="https://niracademy.com/wp-content/uploads/2026/05/Logo-1.jpeg" alt="NIR Academy" onload="this.nextElementSibling.style.display='none'" onerror="this.remove()"><svg width="34" height="34" viewBox="0 0 34 34"><rect width="34" height="34" rx="9" fill="#ffc93c"/><path d="M9 25V9l16 16V9" fill="none" stroke="#2a2466" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/></svg>NIR Academy</div>
- <h1>NIR English Adventure</h1><div class="sub">Play. Learn. Explore.</div>
+ <h1>NIR English Adventure</h1><div class="sub" data-i="sub">Play. Learn. Explore.</div>
+ <div class="row" id="lgs" role="group" aria-label="Language"><button class="lgb" data-l="en">English</button><button class="lgb" data-l="tr">Türkçe</button><button class="lgb" data-l="fa">فارسی</button></div>
  <div id="lv"></div>
- <p>Run, jump, collect coins and words. Answer the ? checkpoints.</p>
- <div class="row"><button class="pb sec" id="sn">Sound: On</button><button class="pb sec" id="lg">Hints: English only</button></div>
+ <p data-i="desc">Run, jump, collect coins and words. Answer the ? checkpoints.</p>
+ <div class="row"><button class="pb sec" id="sn">Sound: On</button></div>
  <p class="cr" id="cr1"></p>
- <p class="rot">Tip: turn your phone sideways for the best view.</p>
+ <p class="rot" data-i="rot">Tip: turn your phone sideways for the best view.</p>
 </div></div>
 
-<div class="scr" id="pause"><div class="card"><h2>Paused</h2><div class="row"><button class="pb" id="rs">Resume</button><button class="pb sec" id="rt">Restart level</button><button class="pb sec" id="mn">Menu</button></div></div></div>
+<div class="scr" id="pause"><div class="card"><h2 data-i="paused">Paused</h2><div class="row"><button class="pb" id="rs" data-i="resume">Resume</button><button class="pb sec" id="rt" data-i="restart">Restart level</button><button class="pb sec" id="mn" data-i="menu">Menu</button></div></div></div>
 
 <div class="scr" id="qz"><div class="card" id="qc"><div id="qh"></div><canvas id="qi" width="72" height="72"></canvas><div class="qrow"><div id="qp"></div><button class="spk" id="qs" aria-label="Listen">🔊</button></div><div class="tl" id="qt"></div><div id="qa"></div><div id="qf" role="status" aria-live="polite"></div><button class="pb" id="qn" style="display:none">Continue</button></div></div>
 
@@ -78,7 +80,7 @@ p{margin:0;line-height:1.35;font-size:clamp(14px,3.4vh,18px)}
  <div class="logo"><img class="lgi" style="height:36px" src="https://niracademy.com/wp-content/uploads/2026/05/Logo-1.jpeg" alt="NIR Academy" onload="this.nextElementSibling.style.display='none'" onerror="this.remove()"><svg width="28" height="28" viewBox="0 0 34 34"><rect width="34" height="34" rx="9" fill="#2a2466"/><path d="M9 25V9l16 16V9" fill="none" stroke="#ffc93c" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/></svg>NIR Academy</div>
  <h2 id="rh"></h2><div class="st" id="rst"></div><p id="rm"></p><div class="chips" id="rw"></div>
  <p class="cr" id="cr2"></p>
- <div class="row"><button class="pb" id="rp">Replay level</button><button class="pb" id="rn">Next level</button><button class="pb sec" id="rmn">Menu</button></div>
+ <div class="row"><button class="pb" id="rp" data-i="replay">Replay level</button><button class="pb" id="rn" data-i="next">Next level</button><button class="pb sec" id="rmn" data-i="menu">Menu</button></div>
 </div></div>
 
 <script>
@@ -99,13 +101,12 @@ addEventListener('resize',resize);resize();
 
 /* ---------- credits: put your website addresses in SITES, e.g. ['niracademy.com'] ---------- */
 const BRAND={by:'Dr. Niki Majidi',sites:['https://niracademy.com/','https://niracademy.com/game-center/']};
-(()=>{const h='Made for NIR Academy by '+BRAND.by+(BRAND.sites.length?'<br>'+BRAND.sites.map(u=>`<a href="${/^https?:/.test(u)?u:'https://'+u}" target="_blank" rel="noopener">${u.replace(/^https?:\/\//,'')}</a>`).join(''):'');
-$('cr1').innerHTML=h;$('cr2').innerHTML=h;})();
+function credits(){const h=tx('made')+' '+tx('by')+(BRAND.sites.length?'<br>'+BRAND.sites.map(u=>`<a dir="ltr" href="${/^https?:/.test(u)?u:'https://'+u}" target="_blank" rel="noopener">${u.replace(/^https?:\/\//,'')}</a>`).join(''):'');
+$('cr1').innerHTML=h;$('cr2').innerHTML=h;}
 
 /* ---------- saved progress ---------- */
 const KEY='nirEnglishAdventure.v1';
-const dl=(navigator.language||'').slice(0,2);
-let sv={unlocked:1,best:{},mute:0,lang:dl==='fa'?'fa':dl==='tr'?'tr':'en'};
+let sv={unlocked:1,best:{},mute:0,lang:'en'};
 try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&typeof s==='object'){sv.unlocked=Math.max(1,s.unlocked|0);sv.best=(s.best&&typeof s.best==='object')?s.best:{};sv.mute=s.mute?1:0;if(['en','fa','tr'].includes(s.lang))sv.lang=s.lang;}}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(sv));}catch(e){}};
 
@@ -123,11 +124,28 @@ function sfx(f,d,type,v,slide){
     o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d);
   }catch(e){}
 }
-function setMute(m){sv.mute=m?1:0;if(sv.mute)hush();$('M').classList.toggle('off',!!sv.mute);$('sn').textContent='Sound: '+(sv.mute?'Off':'On');save();}
-const LGS=['en','fa','tr'],LGN={en:'English only',fa:'فارسی',tr:'Türkçe'};
-function setLang(l){sv.lang=l;$('lg').textContent='Hints: '+LGN[l];save();}
+function setMute(m){sv.mute=m?1:0;if(sv.mute)hush();$('M').classList.toggle('off',!!sv.mute);$('sn').textContent=tx(sv.mute?'sndOff':'sndOn');save();}
+const STR={
+en:{sub:'Play. Learn. Explore.',desc:'Run, jump, collect coins and words. Answer the ? checkpoints.',rot:'Tip: turn your phone sideways for the best view.',paused:'Paused',resume:'Resume',restart:'Restart level',menu:'Menu',replay:'Replay level',next:'Next level',jump:'JUMP',sndOn:'Sound: On',sndOff:'Sound: Off',level:'Level',locked:'Locked',newl:'New',best:'Best',score:'Score',coins:'Coins',correct:'Correct',accuracy:'Accuracy',newbest:'(new best!)',qn:'Question {i} of {n}',tPic:'Picture',tBuild:'Build a sentence',tFill:'Complete the sentence',tVoc:'Vocabulary',tap:'Tap the words in order',undo:'Undo',cont:'Continue',contFlag:'Continue to the flag',ok:'Correct! +100 points.',no:'Not quite. No hearts lost.',ans:'The answer is',newword:'New word:',made:'Made for NIR Academy by',by:'Dr. Niki Majidi',done:'Level {k} complete!',retry:'Level {k}: try again',
+ res:(w,acc,n,c,a,fin)=>(w?(acc>=80?'Great job!':'Good work!'):'Do not give up!')+` You explored ${n} new word${n===1?'':'s'} and answered ${c} out of ${a} question${a===1?'':'s'} correctly. `+(acc>=80?'Keep learning!':'Play again to learn more.')+(fin?' You finished every level!':'')},
+tr:{sub:'Oyna. Öğren. Keşfet.',desc:'Koş, zıpla, altın ve kelime topla. ? kontrol noktalarındaki soruları cevapla.',rot:'İpucu: En iyi görüntü için telefonunu yan çevir.',paused:'Duraklatıldı',resume:'Devam et',restart:'Seviyeyi yeniden başlat',menu:'Menü',replay:'Seviyeyi tekrar oyna',next:'Sonraki seviye',jump:'ZIPLA',sndOn:'Ses: Açık',sndOff:'Ses: Kapalı',level:'Seviye',locked:'Kilitli',newl:'Yeni',best:'En iyi',score:'Puan',coins:'Altın',correct:'Doğru',accuracy:'Doğruluk',newbest:'(yeni rekor!)',qn:'Soru {i} / {n}',tPic:'Resim',tBuild:'Cümle kur',tFill:'Cümleyi tamamla',tVoc:'Kelime bilgisi',tap:'Kelimelere sırayla dokun',undo:'Geri al',cont:'Devam',contFlag:'Bayrağa doğru devam et',ok:'Doğru! +100 puan.',no:'Tam olmadı. Hiç can kaybetmedin.',ans:'Cevap:',newword:'Yeni kelime:',made:'NIR Academy için hazırlayan:',by:'Dr. Niki Majidi',done:'Seviye {k} tamamlandı!',retry:'Seviye {k}: tekrar dene',
+ res:(w,acc,n,c,a,fin)=>(w?(acc>=80?'Harika iş!':'İyi iş!'):'Pes etme!')+` ${n} yeni kelime keşfettin ve ${a} sorunun ${c} tanesini doğru cevapladın. `+(acc>=80?'Öğrenmeye devam et!':'Daha çok öğrenmek için tekrar oyna.')+(fin?' Tüm seviyeleri bitirdin!':'')},
+fa:{sub:'بازی کن. یاد بگیر. کشف کن.',desc:'بدو، بپر، سکه و کلمه جمع کن. به سؤال‌های چک‌پوینت «؟» جواب بده.',rot:'نکته: برای بهترین نمایش، گوشی را افقی بگیر.',paused:'توقف',resume:'ادامه',restart:'شروع دوباره‌ی مرحله',menu:'منو',replay:'بازی دوباره‌ی مرحله',next:'مرحله‌ی بعد',jump:'بپر',sndOn:'صدا: روشن',sndOff:'صدا: خاموش',level:'مرحله',locked:'قفل',newl:'جدید',best:'بهترین',score:'امتیاز',coins:'سکه',correct:'درست',accuracy:'دقت',newbest:'(رکورد جدید!)',qn:'سؤال {i} از {n}',tPic:'تصویر',tBuild:'جمله‌سازی',tFill:'تکمیل جمله',tVoc:'لغت',tap:'کلمه‌ها را به ترتیب بزن',undo:'برگردان',cont:'ادامه',contFlag:'ادامه تا پرچم',ok:'درست بود! +۱۰۰ امتیاز.',no:'اشتباه بود، ولی قلبی کم نشد.',ans:'جواب:',newword:'کلمه‌ی جدید:',made:'ساخته‌شده برای آکادمی NIR توسط',by:'دکتر نیکی مجیدی',done:'مرحله‌ی {k} تمام شد!',retry:'مرحله‌ی {k}: دوباره امتحان کن',
+ res:(w,acc,n,c,a,fin)=>(w?(acc>=80?'آفرین!':'کار خوبی بود!'):'تسلیم نشو!')+` ${n} کلمه‌ی جدید کشف کردی و ${c} سؤال از ${a} سؤال را درست جواب دادی. `+(acc>=80?'یادگیری را ادامه بده!':'برای یادگیری بیشتر دوباره بازی کن.')+(fin?' همه‌ی مرحله‌ها را تمام کردی!':'')}
+};
+const tx=k=>(STR[sv.lang]||STR.en)[k];
+const ln=l=>(l.nn&&l.nn[sv.lang])||l.n;
 const tl=(q,k)=>{const l=q.l&&q.l[sv.lang];return l?l[k]:'';};
-const UI={fa:['درست بود!','اشتباه بود، ولی قلبی کم نشد.'],tr:['Doğru!','Olmadı ama can kaybetmedin.']};
+function applyLang(){
+  document.documentElement.lang=sv.lang;const rtl=sv.lang==='fa';
+  document.querySelectorAll('[data-i]').forEach(e=>e.textContent=tx(e.dataset.i));
+  document.querySelectorAll('.card').forEach(c=>c.dir=rtl?'rtl':'ltr');
+  ['lv','qa','qp','lgs'].forEach(i=>$(i).dir='ltr');
+  document.querySelectorAll('.lgb').forEach(b=>b.classList.toggle('on',b.dataset.l===sv.lang));
+  $('sn').textContent=tx(sv.mute?'sndOff':'sndOn');credits();
+}
+function setLang(l){sv.lang=['en','fa','tr'].includes(l)?l:'en';applyLang();if(state==='menu')menu();save();}
+document.querySelectorAll('.lgb').forEach(b=>b.onclick=()=>setLang(b.dataset.l));
 
 /* ---------- learning content (add B1 levels by appending to LV) ---------- */
 const TT=(fq,fe,tq,te)=>({fa:[fq,fe],tr:[tq,te]});
@@ -137,7 +155,7 @@ const BQ=['کلمه‌ها را به ترتیب بچین.','Kelimeleri sıraya k
 const WHAT=['این چیست؟','Bu nedir?'],COL=['این چه رنگی است؟','Bu hangi renk?'];
 /* Each level has a pool of questions. A random 5 are picked every time the level starts. */
 const LV=[
- {n:'Everyday words',cefr:'A1',sky:['#2f7bff','#8fd3ff','#ffd9a8'],hl:['#9fa9ee','#6fc3c9','#43a98a'],
+ {n:'Everyday words',nn:{tr:'Günlük kelimeler',fa:'لغت‌های روزمره'},cefr:'A1',sky:['#2f7bff','#8fd3ff','#ffd9a8'],hl:['#9fa9ee','#6fc3c9','#43a98a'],
   words:['house','book','school','day','pen','family'],qs:[
   Q('pic','What is this?','house','tree','cup','A house is a place where people live.','house',TT(WHAT[0],'house یعنی خانه. خانه جایی است که مردم در آن زندگی می‌کنند.',WHAT[1],'House “ev” demektir. Ev, insanların yaşadığı yerdir.')),
   Q('pic','What is this?','book','cup','fish','You read a book.','book',TT(WHAT[0],'book یعنی کتاب. کتاب می‌خوانید.',WHAT[1],'Book “kitap” demektir. Kitap okursun.')),
@@ -149,7 +167,7 @@ const LV=[
   Q('fill','I go to school every ___.','day','blue','run','"Every day" means each day.',null,TT('من هر ___ به مدرسه می‌روم.','every day یعنی هر روز.','Her ___ okula giderim.','Every day “her gün” demektir.')),
   Q('fill','There are seven ___ in a week.','days','pens','books','A week has seven days.',null,TT('در یک هفته هفت ___ وجود دارد.','day یعنی روز. یک هفته هفت روز دارد.','Bir haftada yedi ___ vardır.','Day “gün” demektir. Bir haftada yedi gün vardır.')),
   Q('fill','I live with my ___: mother, father and sister.','family','pen','door','Your family is the people you live with.',null,TT('من با ___ خودم زندگی می‌کنم: مادر، پدر و خواهر.','family یعنی خانواده.','Annem, babam ve kız kardeşimle, yani ___ ile yaşıyorum.','Family “aile” demektir.'))]},
- {n:'Food, animals, colors',cefr:'A1',sky:['#ff7a8a','#ffb58a','#ffe6a8'],hl:['#d99bd0','#e8a07a','#79b86a'],
+ {n:'Food, animals, colors',nn:{tr:'Yiyecekler, hayvanlar, renkler',fa:'غذا، حیوانات، رنگ‌ها'},cefr:'A1',sky:['#ff7a8a','#ffb58a','#ffe6a8'],hl:['#d99bd0','#e8a07a','#79b86a'],
   words:['apple','fish','blue','dog','banana','bread'],qs:[
   Q('pic','What is this?','apple','house','book','An apple is a fruit.','apple',TT(WHAT[0],'apple یعنی سیب. سیب یک میوه است.',WHAT[1],'Apple “elma” demektir. Elma bir meyvedir.')),
   Q('pic','What is this?','fish','tree','cup','A fish lives in water.','fish',TT(WHAT[0],'fish یعنی ماهی. ماهی در آب زندگی می‌کند.',WHAT[1],'Fish “balık” demektir. Balık suda yaşar.')),
@@ -163,7 +181,7 @@ const LV=[
   Q('mc','Which one is a fruit?','banana','bread','milk','A banana is a fruit. Bread and milk are not.',null,TT('کدام یک میوه است؟','banana یعنی موز. موز میوه است؛ نان و شیر میوه نیستند.','Hangisi bir meyvedir?','Banana “muz” demektir. Muz meyvedir; ekmek ve süt değildir.')),
   Q('mc','Which one do we drink?','milk','bread','apple','We drink milk. We eat bread and apples.',null,TT('کدام را می‌نوشیم؟','milk یعنی شیر. شیر می‌نوشیم؛ نان و سیب می‌خوریم.','Hangisini içeriz?','Milk “süt” demektir. Süt içeriz; ekmek ve elma yeriz.')),
   Q('fill','I eat an ___ every day.','apple','dog','blue','You can eat an apple. We use "an" before a vowel sound.',null,TT('من هر روز یک ___ می‌خورم.','apple یعنی سیب. قبل از صدای مصوت از an استفاده می‌کنیم.','Her gün bir ___ yerim.','Apple “elma” demektir. Ünlü sesinden önce “an” kullanırız.'))]},
- {n:'Actions and sentences',cefr:'A1+',sky:['#17a58f','#7fe0c8','#f4f0b0'],hl:['#7fb0e8','#4fbfa6','#3a9a62'],
+ {n:'Actions and sentences',nn:{tr:'Eylemler ve cümleler',fa:'فعل‌ها و جمله‌ها'},cefr:'A1+',sky:['#17a58f','#7fe0c8','#f4f0b0'],hl:['#7fb0e8','#4fbfa6','#3a9a62'],
   words:['fly','drink','read','small','run','sleep'],qs:[
   Q('fill','Birds can ___ in the sky.','fly','swim','cook','Birds have wings, so they can fly.',null,TT('پرنده‌ها می‌توانند در آسمان ___ کنند.','fly یعنی پرواز کردن. پرنده‌ها بال دارند.','Kuşlar gökyüzünde ___ bilir.','Fly “uçmak” demektir. Kuşların kanatları vardır.')),
   Q('fill','We ___ water when we are thirsty.','drink','eat','read','We drink water.',null,TT('وقتی تشنه‌ایم آب ___.','drink یعنی نوشیدن.','Susayınca su ___.','Drink “içmek” demektir.')),
@@ -176,7 +194,7 @@ const LV=[
   Q('mc',"What is the opposite of 'big'?",'small','tall','fast','Big and small are opposites.',null,TT('متضاد big چیست؟','big یعنی بزرگ و small یعنی کوچک.','“Big” kelimesinin zıt anlamlısı nedir?','Big “büyük”, small “küçük” demektir.')),
   Q('mc',"What is the opposite of 'hot'?",'cold','red','tall','Hot and cold are opposites.',null,TT('متضاد hot چیست؟','hot یعنی داغ و cold یعنی سرد.','“Hot” kelimesinin zıt anlamlısı nedir?','Hot “sıcak”, cold “soğuk” demektir.')),
   Q('mc','What do you do with a book?','read','drink','wear','You read a book.',null,TT('با کتاب چه کار می‌کنید؟','read یعنی خواندن.','Kitapla ne yaparsın?','Read “okumak” demektir.'))]},
- {n:'Basic grammar',cefr:'A2',sky:['#5a3fc0','#a78bf0','#ffc6e0'],hl:['#b79af0','#8a7ad8','#5a9a9a'],
+ {n:'Basic grammar',nn:{tr:'Temel dil bilgisi',fa:'گرامر پایه'},cefr:'A2',sky:['#5a3fc0','#a78bf0','#ffc6e0'],hl:['#b79af0','#8a7ad8','#5a9a9a'],
   words:['is','am','are','goes','friends','bus'],qs:[
   Q('fill','She ___ happy.','is','are','am','Use "is" with she, he, and it.',null,TT('او خوشحال است.','با she، he و it از is استفاده می‌کنیم.','O mutlu.','She, he ve it ile “is” kullanılır.')),
   Q('fill','I ___ a student.','am','is','are','Use "am" with I.',null,TT('من یک دانش‌آموز هستم.','با I از am استفاده می‌کنیم.','Ben bir öğrenciyim.','I ile “am” kullanılır.')),
@@ -265,7 +283,7 @@ function resume(){if(state!=='pause')return;state='play';show('');syncKeys();}
 function menu(){state='menu';relAll();ctl(0);
   const box=$('lv');box.innerHTML='';
   LV.forEach((l,i)=>{const b=document.createElement('button'),open=i<sv.unlocked;b.className='lvb';b.disabled=!open;
-    b.innerHTML=`<b>Level ${i+1}</b><span>${l.n}</span><small>${open?l.cefr+(sv.best[i+1]?' · Best '+sv.best[i+1]:' · New'):'Locked'}</small>`;
+    b.innerHTML=`<b>${tx('level')} ${i+1}</b><span>${ln(l)}</span><small>${open?l.cefr+(sv.best[i+1]?' · '+tx('best')+' '+sv.best[i+1]:' · '+tx('newl')):tx('locked')}</small>`;
     b.onclick=()=>start(i);box.appendChild(b);});
   show('menu');
 }
@@ -276,7 +294,6 @@ function start(i){
   try{if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('landscape').catch(()=>{});}catch(e){}
   relAll();reset(i);state='play';show('');ctl(1);sfx(520,.15,'square',.05,900);
 }
-$('lg').onclick=()=>setLang(LGS[(LGS.indexOf(sv.lang)+1)%3]);
 $('sn').onclick=()=>setMute(!sv.mute);$('M').onclick=()=>setMute(!sv.mute);
 $('P').onclick=pause;$('rs').onclick=resume;$('rt').onclick=()=>start(cur);$('mn').onclick=menu;
 $('rp').onclick=()=>start(cur);$('rn').onclick=()=>start(cur+1);$('rmn').onclick=menu;
@@ -296,7 +313,7 @@ let qi=0,qdone=false;
 function openQuiz(i){
   qi=i;qdone=false;state='qz';relAll();ctl(0);
   const q=qsel[i];
-  $('qh').textContent=`Question ${i+1} of ${qsel.length} · ${q.t==='pic'?'Picture':q.t==='build'?'Build a sentence':q.t==='fill'?'Complete the sentence':'Vocabulary'}`;
+  $('qh').textContent=tx('qn').replace('{i}',i+1).replace('{n}',qsel.length)+' · '+tx(q.t==='pic'?'tPic':q.t==='build'?'tBuild':q.t==='fill'?'tFill':'tVoc');
   $('qp').textContent=q.q;$('qt').textContent=tl(q,0);$('qt').dir=sv.lang==='fa'?'rtl':'ltr';$('qs').style.display=TTS?'inline-block':'none';$('qf').innerHTML='';$('qn').style.display='none';
   const ic=$('qi');ic.style.display=q.t==='pic'?'block':'none';
   if(q.t==='pic'){const g=ic.getContext('2d');g.clearRect(0,0,72,72);if(q.x[0]==='#')IC.sw(g,q.x);else IC[q.x](g);}
@@ -307,8 +324,8 @@ function openQuiz(i){
 }
 function buildUI(q,a){
   const ch=[],n=q.words.length,bs=document.createElement('div'),bc=document.createElement('div'),u=document.createElement('button');
-  bs.id='bs';bc.className='row';u.className='ans';u.textContent='Undo';
-  const ren=()=>{bs.textContent=ch.length?ch.map(c=>c.w).join(' '):'Tap the words in order';};ren();
+  bs.id='bs';bc.className='row';u.className='ans';u.textContent=tx('undo');
+  const ren=()=>{bs.textContent=ch.length?ch.map(c=>c.w).join(' '):tx('tap');};ren();
   shuffle(q.words.map(w=>({w}))).forEach(c=>{const b=document.createElement('button');b.className='ans';b.textContent=c.w;c.b=b;
     b.onclick=()=>{if(qdone||ch.length>=n)return;ch.push(c);b.disabled=true;ren();
       if(ch.length===n){const ok=ch.map(x=>x.w).join(' ')===q.words.join(' ');bs.textContent=ch.map(x=>x.w).join(' ')+'.';finishQ(ok,null);}};bc.appendChild(b);});
@@ -319,9 +336,10 @@ function finishQ(ok,btn){
   qdone=true;const q=qsel[qi];asked++;seen.add(q.w);
   document.querySelectorAll('#qa .ans').forEach(b=>{b.disabled=true;if(q.t!=='build'){if(b.textContent===q.a){b.classList.add('good');b.textContent='✓ '+b.textContent;}else if(b===btn){b.classList.add('bad');b.textContent='✗ '+b.textContent;}}});
   if(ok){corr++;score+=100;sfx(660,.12,'square',.05,990);setTimeout(()=>sfx(990,.2,'square',.05,1320),130);}else sfx(200,.3,'sawtooth',.05,120);
-  $('qf').innerHTML=(ok?'<b class="ok">✓ Correct! +100 points.</b> ':'<b class="no">✗ Not quite. No hearts lost.</b> ')+`The answer is <b>${q.a}</b>. ${q.ex}`+(sv.lang!=='en'&&q.l?`<div class="tl" dir="${sv.lang==='fa'?'rtl':'ltr'}">💡 ${UI[sv.lang][ok?0:1]} ${tl(q,1)}</div>`:'');
+  const dr=sv.lang==='fa'?'rtl':'ltr';
+  $('qf').innerHTML=`<div dir="${dr}">${ok?'<b class="ok">✓ '+tx('ok')+'</b>':'<b class="no">✗ '+tx('no')+'</b>'} ${tx('ans')} <b dir="ltr">${q.a}</b></div><div dir="ltr">${q.ex}</div>`+(sv.lang!=='en'&&q.l?`<div class="tl" dir="${dr}">💡 ${tl(q,1)}</div>`:'');
   setTimeout(()=>say(spkText()),ok?400:150);
-  const n=$('qn');n.style.display='inline-block';n.textContent=qi===CP.length-1?'Continue to the flag':'Continue';
+  const n=$('qn');n.style.display='inline-block';n.textContent=tx(qi===CP.length-1?'contFlag':'cont');
 }
 const spkText=()=>{const q=qsel[qi];return qdone?(q.t==='fill'?q.q.replace('___',q.a):q.a):(q.t==='fill'?q.q.replace('___','blank'):q.q);};
 $('qs').onclick=()=>say(spkText());
@@ -338,9 +356,9 @@ function endRun(win){
   const k=cur+1,acc=asked?Math.round(corr/asked*100):0,nb=score>(sv.best[k]||0),n=seen.size+wtok.filter(w=>w.got&&!seen.has(w.w)).length;
   if(nb)sv.best[k]=score;
   const more=win&&cur+1<LV.length;if(more)sv.unlocked=Math.max(sv.unlocked,cur+2);save();
-  $('rh').textContent=win?`Level ${k} complete!`:`Level ${k}: try again`;
-  $('rst').innerHTML=`<div><b>${score}</b>Score${nb?' (new best!)':''}</div><div><b>${coinN}/${coinTot}</b>Coins</div><div><b>${corr}/${asked}</b>Correct</div><div><b>${acc}%</b>Accuracy</div>`;
-  $('rm').textContent=(win?(acc>=80?'Great job!':'Good work!'):'Do not give up!')+` You explored ${n} new word${n===1?'':'s'} and answered ${corr} out of ${asked} question${asked===1?'':'s'} correctly. `+(acc>=80?'Keep learning!':'Play again to learn more.')+(win&&!more?' You finished every level!':'');
+  $('rh').textContent=tx(win?'done':'retry').replace('{k}',k);
+  $('rst').innerHTML=`<div><b>${score}</b>${tx('score')}${nb?' '+tx('newbest'):''}</div><div><b>${coinN}/${coinTot}</b>${tx('coins')}</div><div><b>${corr}/${asked}</b>${tx('correct')}</div><div><b>${acc}%</b>${tx('accuracy')}</div>`;
+  $('rm').textContent=tx('res')(win,acc,n,corr,asked,win&&!more);
   $('rw').innerHTML=[...seen].map(w=>`<span>${w}</span>`).join('')+wtok.filter(w=>w.got&&!seen.has(w.w)).map(w=>`<span>${w.w}</span>`).join('');
   $('rn').style.display=more?'inline-block':'none';
   show('res');if(win)sfx(660,.4,'square',.05,1200);
@@ -391,7 +409,7 @@ function update(dt){
     return;
   }
   for(const c of coinL)if(!c.got&&Math.abs(c.x-p.x)<18&&Math.abs(c.y-(p.y-18))<24){c.got=1;coinN++;score+=10;spawn(c.x,c.y,6,'#ffd84a',70);sfx(880,.12,'square',.04,1320);}
-  for(const w of wtok)if(!w.got&&Math.abs(w.x-p.x)<26&&Math.abs(w.y-(p.y-18))<26){w.got=1;seen.add(w.w);score+=50;toast.t=1.6;toast.s='New word: '+w.w;say(w.w);spawn(w.x,w.y,8,'#8fe3ff',80);sfx(740,.1,'triangle',.05,1100);}
+  for(const w of wtok)if(!w.got&&Math.abs(w.x-p.x)<26&&Math.abs(w.y-(p.y-18))<26){w.got=1;seen.add(w.w);score+=50;toast.t=1.6;toast.s=tx('newword')+' '+w.w;say(w.w);spawn(w.x,w.y,8,'#8fe3ff',80);sfx(740,.1,'triangle',.05,1100);}
   for(const [x,w] of spikeL)if(p.y>GY-14&&p.x+8>x&&p.x-8<x+w)hurt(-p.f);
   for(const s of slimes){
     if(!s.alive)continue;
@@ -530,7 +548,7 @@ function draw(){
   X.fillStyle='rgba(20,20,70,.55)';rr(10,8,112,46,14);X.fill();
   X.fillStyle='#ffd84a';X.beginPath();X.arc(26,23,8,0,6.3);X.fill();
   X.fillStyle='#fff';X.font='800 16px system-ui,sans-serif';X.fillText(coinN+'/'+coinTot,40,24);
-  X.font='700 13px system-ui,sans-serif';X.fillText('Score '+score,20,42);
+  X.font='700 13px system-ui,sans-serif';X.fillText(tx('score')+' '+score,20,42);
   X.font='22px system-ui,sans-serif';
   for(let i=0;i<3;i++){X.fillStyle=i<hearts?'#ff4d6d':'rgba(255,255,255,.35)';X.fillText('♥',W-92+i*28,24);}
   const bw=Math.min(160,W*.28),bx=W/2-bw/2,pr=Math.min(1,p.x/FIN);
