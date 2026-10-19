@@ -36,8 +36,8 @@ h2{margin:0;font-size:clamp(22px,6vh,36px);font-weight:700}
 p{margin:0;line-height:1.4;font-size:clamp(14px,3.4vh,17px);font-weight:400}
 .rot{display:none;color:#ffe3b0}
 @media (orientation:portrait){.rot{display:block}}
-#lv{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:100%}
-@media (max-width:520px){#lv{grid-template-columns:repeat(2,1fr)}}
+#lv{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;width:100%}
+@media (max-width:520px){#lv{grid-template-columns:repeat(3,1fr)}}
 .lvb{position:relative;min-height:68px;border-radius:20px;border:0;background:linear-gradient(180deg,#fff,#fff3d1);color:var(--ink);padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:13px;font-weight:500;box-shadow:0 5px 0 #d9951a,0 10px 20px rgba(10,8,60,.3);transition:transform .08s,box-shadow .08s}
 .lvb:active:not(:disabled){transform:translateY(3px);box-shadow:0 2px 0 #d9951a,0 4px 10px rgba(10,8,60,.3)}
 .lvb b{font-size:16px;font-weight:700}.lvb small{opacity:.75}
@@ -80,6 +80,7 @@ p{margin:0;line-height:1.4;font-size:clamp(14px,3.4vh,17px);font-weight:400}
 @keyframes pop{from{transform:scale(.2) rotate(-35deg);opacity:0}to{transform:none;opacity:1}}
 .lvb .stl{color:#e89a00;letter-spacing:1px;font-size:14px}.lvb:disabled .stl{color:#fff}
 @media (prefers-reduced-motion:reduce){.stars span{animation:none;opacity:1}}
+.lvb{font-size:12px}.lvb b{font-size:15px}
 </style>
 </head>
 <body>
@@ -98,7 +99,7 @@ p{margin:0;line-height:1.4;font-size:clamp(14px,3.4vh,17px);font-weight:400}
  <p class="rot" data-i="rot">Tip: turn your phone sideways for the best view.</p>
 </div></div>
 
-<div class="scr" id="pause"><div class="card"><h2 data-i="paused">Paused</h2><div class="row"><button class="pb" id="rs" data-i="resume">Resume</button><button class="pb sec" id="rt" data-i="restart">Restart level</button><button class="pb sec" id="mn" data-i="menu">Menu</button></div></div></div>
+<div class="scr" id="pause"><div class="card"><h2 data-i="paused">Paused</h2><div class="row"><button class="pb" id="rs" data-i="resume">Resume</button><button class="pb sec" id="rt" data-i="restart">Restart level</button><button class="pb sec" id="mu"></button><button class="pb sec" id="mn" data-i="menu">Menu</button></div></div></div>
 
 <div class="scr" id="qz"><div class="card" id="qc"><div id="qh"></div><canvas id="qi" width="72" height="72"></canvas><div class="qrow"><div id="qp"></div><button class="spk" id="qs" aria-label="Listen">🔊</button></div><div class="tl" id="qt"></div><div id="qa"></div><div id="qf" role="status" aria-live="polite"></div><button class="pb" id="qn" style="display:none">Continue</button></div></div>
 
@@ -109,7 +110,7 @@ p{margin:0;line-height:1.4;font-size:clamp(14px,3.4vh,17px);font-weight:400}
  <div class="row"><button class="pb" id="rp" data-i="replay">Replay level</button><button class="pb" id="rn" data-i="next">Next level</button><button class="pb sec" id="rvb" data-i="review">Review words</button><button class="pb sec" id="rmn" data-i="menu">Menu</button></div>
 </div></div>
 
-<div class="scr" id="vb"><div class="card" id="vc"><h2 data-i="wordsT">My Words</h2><p id="vn"></p><div id="vl"></div><div class="row"><button class="pb sec" id="vback" data-i="back">Back</button></div></div></div>
+<div class="scr" id="vb"><div class="card" id="vc"><h2 data-i="wordsT">My Words</h2><p id="vn"></p><div id="vl"></div><div class="row"><button class="pb" id="vprac" data-i="practice">Practice</button><button class="pb sec" id="vback" data-i="back">Back</button></div></div></div>
 
 <script>
 (()=>{
@@ -134,8 +135,8 @@ $('cr1').innerHTML=h;$('cr2').innerHTML=h;}
 
 /* ---------- saved progress ---------- */
 const KEY='nirEnglishAdventure.v1';
-let sv={unlocked:1,best:{},mute:0,lang:'en',stars:{},vocab:{}};
-try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&typeof s==='object'){sv.unlocked=Math.max(1,s.unlocked|0);sv.best=(s.best&&typeof s.best==='object')?s.best:{};sv.mute=s.mute?1:0;if(['en','fa','tr'].includes(s.lang))sv.lang=s.lang;if(s.stars&&typeof s.stars==='object')sv.stars=s.stars;if(s.vocab&&typeof s.vocab==='object')sv.vocab=s.vocab;}}catch(e){}
+let sv={unlocked:1,best:{},mute:0,lang:'en',stars:{},vocab:{},music:1};
+try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&typeof s==='object'){sv.unlocked=Math.max(1,s.unlocked|0);sv.best=(s.best&&typeof s.best==='object')?s.best:{};sv.mute=s.mute?1:0;if(['en','fa','tr'].includes(s.lang))sv.lang=s.lang;if(s.stars&&typeof s.stars==='object')sv.stars=s.stars;if(s.vocab&&typeof s.vocab==='object')sv.vocab=s.vocab;if(s.music===0)sv.music=0;}}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(sv));}catch(e){}};
 
 /* ---------- audio + speech ---------- */
@@ -152,6 +153,27 @@ function sfx(f,d,type,v,slide){
     o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d);
   }catch(e){}
 }
+let musT=0,musStep=0;
+function musTick(){
+  if(!AC||sv.mute||!sv.music||AC.state!=='running'||!(state==='play'||state==='boss'||state==='qz'||state==='cele')){musT=0;return;}
+  const now=AC.currentTime,night=NIGHT[cur],bpm=[112,120,126,92,118,100][cur]||112,sd=60/bpm/2,vol=state==='qz'?.35:1;
+  if(!musT||musT<now-.2)musT=now+.05;
+  while(musT<now+.45){
+    const bar=(musStep>>3)&3,st=musStep&7,root=[0,-3,-7,-5][bar]+[0,2,-1,-5,3,-3][cur],ch=night?[0,3,7,12]:[0,4,7,12];
+    const hz=n=>262*Math.pow(2,n/12);
+    const lead=[0,1,2,3,2,1,2,1][st],bo=st===0||st===4;
+    try{
+      const o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.value=hz(root+ch[lead]+(st>5?12:0));
+      g.gain.setValueAtTime(.0001,musT);g.gain.linearRampToValueAtTime(.022*vol,musT+.02);g.gain.exponentialRampToValueAtTime(.0001,musT+sd*1.6);
+      o.connect(g);g.connect(AC.destination);o.start(musT);o.stop(musT+sd*1.7);
+      if(bo){const b=AC.createOscillator(),h=AC.createGain();b.type='sine';b.frequency.value=hz(root-24);
+        h.gain.setValueAtTime(.0001,musT);h.gain.linearRampToValueAtTime(.05*vol,musT+.03);h.gain.exponentialRampToValueAtTime(.0001,musT+sd*3.5);
+        b.connect(h);h.connect(AC.destination);b.start(musT);b.stop(musT+sd*3.6);}
+    }catch(e){}
+    musT+=sd;musStep++;
+  }
+}
+setInterval(musTick,120);
 function setMute(m){sv.mute=m?1:0;if(sv.mute)hush();$('M').classList.toggle('off',!!sv.mute);$('sn').textContent=tx(sv.mute?'sndOff':'sndOn');save();}
 const STR={
 en:{sub:'Play. Learn. Explore.',desc:'Run, jump, collect coins and words. Answer the ? checkpoints.',rot:'Tip: turn your phone sideways for the best view.',paused:'Paused',resume:'Resume',restart:'Restart level',menu:'Menu',replay:'Replay level',next:'Next level',jump:'JUMP',sndOn:'Sound: On',sndOff:'Sound: Off',level:'Level',locked:'Locked',newl:'New',best:'Best',score:'Score',coins:'Coins',correct:'Correct',accuracy:'Accuracy',newbest:'(new best!)',qn:'Question {i} of {n}',tPic:'Picture',tBuild:'Build a sentence',tFill:'Complete the sentence',tVoc:'Vocabulary',tap:'Tap the words in order',undo:'Undo',cont:'Continue',contFlag:'Continue to the flag',ok:'Correct! +100 points.',no:'Not quite. No hearts lost.',ans:'The answer is',newword:'New word:',made:'Made for NIR Academy by',by:'Dr. Niki Majidi',done:'Level {k} complete!',retry:'Level {k}: try again',
@@ -164,6 +186,9 @@ fa:{sub:'بازی کن. یاد بگیر. کشف کن.',desc:'بدو، بپر، �
 Object.assign(STR.en,{wordsT:'My Words',vempty:'No words yet. Words you miss will show up here for practice!',vhint:'Words to practice. They come back in your next games. Answer a word right twice and it is learned!',back:'Back',review:'Review words',okp:'Correct! +{p} points.',cmb:'Combo x{m}!',shBreak:'Shield saved you!',shGot:'Shield on!',magGot:'Coin magnet!',djGot:'Double jump!',hpGot:'+1 heart!',hpFull:'+50 points!',cmbShield:'3 in a row! Shield earned.'});
 Object.assign(STR.tr,{wordsT:'Kelimelerim',vempty:'Henüz kelime yok. Yanlış yaptığın kelimeler pratik için burada görünür!',vhint:'Pratik yapılacak kelimeler. Sonraki oyunlarında tekrar gelir. Bir kelimeyi iki kez doğru bil, öğrenilmiş olsun!',back:'Geri',review:'Kelimeleri gözden geçir',okp:'Doğru! +{p} puan.',cmb:'Kombo x{m}!',shBreak:'Kalkan seni kurtardı!',shGot:'Kalkan açık!',magGot:'Altın mıknatısı!',djGot:'Çift zıplama!',hpGot:'+1 can!',hpFull:'+50 puan!',cmbShield:'Üst üste 3 doğru! Kalkan kazandın.'});
 Object.assign(STR.fa,{wordsT:'لغت‌های من',vempty:'هنوز لغتی نیست. لغت‌هایی که اشتباه می‌زنی برای تمرین اینجا می‌آیند!',vhint:'لغت‌های تمرینی. در بازی‌های بعدی دوباره می‌آیند. هر لغت را دو بار درست جواب بدهی یاد گرفته‌ای!',back:'برگشت',review:'مرور لغت‌ها',okp:'درست! +{p} امتیاز.',cmb:'کمبو x{m}!',shBreak:'سپر نجاتت داد!',shGot:'سپر فعال شد!',magGot:'آهنربای سکه!',djGot:'پرش دوبل!',hpGot:'+۱ قلب!',hpFull:'+۵۰ امتیاز!',cmbShield:'سه جواب درست پشت‌سرهم! سپر گرفتی.'});
+Object.assign(STR.en,{practice:'Practice',musOn:'Music: On',musOff:'Music: Off',okq:'Correct!',boss:'BOSS',bossIn:'Boss battle! Right answer = hit. Wrong answer = it hits you.',bossH:'Boss battle · Boss HP {h}',bossHit:'Direct hit! +150',bossDown:'Boss defeated! +300'});
+Object.assign(STR.tr,{practice:'Pratik yap',musOn:'Müzik: Açık',musOff:'Müzik: Kapalı',okq:'Doğru!',boss:'PATRON',bossIn:'Patron savaşı! Doğru cevap = vuruş. Yanlış cevap = o sana vurur.',bossH:'Patron savaşı · Patron canı {h}',bossHit:'Tam isabet! +150',bossDown:'Patron yenildi! +300'});
+Object.assign(STR.fa,{practice:'تمرین',musOn:'موسیقی: روشن',musOff:'موسیقی: خاموش',okq:'درست!',boss:'باس',bossIn:'نبرد با باس! جواب درست = ضربه به او. جواب غلط = او به تو ضربه می‌زند.',bossH:'نبرد با باس · جان باس {h}',bossHit:'ضربه‌ی کامل! +۱۵۰',bossDown:'باس شکست خورد! +۳۰۰'});
 const tx=k=>(STR[sv.lang]||STR.en)[k];
 const ln=l=>(l.nn&&l.nn[sv.lang])||l.n;
 const tl=(q,k)=>{const l=q.l&&q.l[sv.lang];return l?l[k]:'';};
@@ -238,7 +263,44 @@ const LV=[
   Q('fill','She ___ milk every morning.','drinks','drink','drinking','With she, the verb takes -s: drinks.',null,TT('او هر صبح شیر می‌نوشد.','با she فعل s می‌گیرد: drinks.','O her sabah süt içer.','“She” ile fiil -s alır: drinks.')),
   Q('fill','My brother ___ English at school.','studies','study','studying','With he, "study" becomes "studies" (y changes to ies).',null,TT('برادر من در مدرسه انگلیسی می‌خواند.','با he، study به studies تبدیل می‌شود (y به ies).','Kardeşim okulda İngilizce çalışır.','He ile “study”, “studies” olur (y, ies’e dönüşür).')),
   B('Make a sentence.',['We','are','good','friends'],'Use "are" after "we".','friends',TT('یک جمله بساز.','بعد از we از are استفاده می‌کنیم. We are good friends یعنی ما دوستان خوبی هستیم.','Bir cümle kur.','“We” den sonra “are” kullanılır. We are good friends “İyi arkadaşız” demektir.')),
-  B('Make a sentence.',['He','likes','football'],'Subject, then the verb with -s, then the object.','likes',TT('یک جمله بساز.','اول فاعل، بعد فعل با s، بعد مفعول. He likes football یعنی او فوتبال را دوست دارد.','Bir cümle kur.','Önce özne, sonra -s’li fiil, sonra nesne. He likes football “O futbolu sever” demektir.'))]}
+  B('Make a sentence.',['He','likes','football'],'Subject, then the verb with -s, then the object.','likes',TT('یک جمله بساز.','اول فاعل، بعد فعل با s، بعد مفعول. He likes football یعنی او فوتبال را دوست دارد.','Bir cümle kur.','Önce özne, sonra -s’li fiil, sonra nesne. He likes football “O futbolu sever” demektir.'))]},
+ {n:'Travel and places',nn:{tr:'Seyahat ve yerler',fa:'سفر و مکان‌ها'},cefr:'A2',sky:['#6fb7e8','#bfe6f7','#eefaff'],hl:['#9fd0f0','#bfe3f5','#e4f4fc'],
+  words:['airport','ticket','hotel','map','train','passport'],qs:[
+  Q('mc','Where do planes take off and land?','airport','kitchen','garden','Planes take off and land at an airport.',null,TT('هواپیماها کجا بلند می‌شوند و فرود می‌آیند؟','airport یعنی فرودگاه.','Uçaklar nerede kalkar ve iner?','Airport “havalimanı” demektir.')),
+  Q('fill','You need a ___ to travel by train.','ticket','pencil','window','A ticket lets you travel by train, bus, or plane.',null,TT('برای سفر با قطار به ___ نیاز دارید.','ticket یعنی بلیت.','Trenle seyahat etmek için ___ gerekir.','Ticket “bilet” demektir.')),
+  Q('mc','Where do you sleep when you travel?','hotel','bakery','school','You sleep in a hotel when you travel.',null,TT('وقتی سفر می‌کنید کجا می‌خوابید؟','hotel یعنی هتل.','Seyahat ederken nerede uyursun?','Hotel “otel” demektir.')),
+  Q('mc','What helps you find the way?','map','spoon','pillow','A map shows you the way.',null,TT('چه چیزی کمک می‌کند راه را پیدا کنید؟','map یعنی نقشه.','Yolu bulmana ne yardım eder?','Map “harita” demektir.')),
+  Q('mc','What do you show at the border to enter another country?','passport','umbrella','ball','You show your passport at the border.',null,TT('برای ورود به کشور دیگر، در مرز چه چیزی نشان می‌دهید؟','passport یعنی گذرنامه.','Başka bir ülkeye girmek için sınırda neyi gösterirsin?','Passport “pasaport” demektir.')),
+  Q('mc','Which vehicle runs on rails?','train','taxi','bicycle','A train runs on rails.',null,TT('کدام وسیله روی ریل حرکت می‌کند؟','train یعنی قطار.','Hangi araç raylar üzerinde gider?','Train “tren” demektir.')),
+  Q('mc','What is the opposite of "arrive"?','leave','visit','enter','Arrive means to get to a place. Leave means to go away.',null,TT('متضاد arrive چیست؟','arrive یعنی رسیدن و leave یعنی ترک کردن.','“Arrive” kelimesinin zıt anlamlısı nedir?','Arrive “varmak”, leave “ayrılmak” demektir.')),
+  Q('fill','The train ___ at nine and arrives at eleven.','leaves','leave','leaving','With "it" (the train), the verb takes -s: leaves.',null,TT('قطار ساعت نه ___ و ساعت یازده می‌رسد.','با it (قطار) فعل s می‌گیرد: leaves.','Tren dokuzda ___ ve on birde varır.','“It” (tren) ile fiil -s alır: leaves.')),
+  Q('fill','I want a window ___ on the plane.','seat','bed','door','A seat is the place where you sit.',null,TT('در هواپیما یک ___ کنار پنجره می‌خواهم.','seat یعنی صندلی.','Uçakta cam kenarı bir ___ istiyorum.','Seat “koltuk” demektir.')),
+  Q('fill','The hotel is ___ the bank and the post office.','between','under','with','Between means in the middle of two things.',null,TT('هتل ___ بانک و اداره‌ی پست است.','between یعنی بین.','Otel banka ile postane ___.','Between “arasında” demektir.')),
+  Q('fill','We are going ___ a trip to Istanbul.','on','at','in','We say "go on a trip".',null,TT('ما به یک سفر به استانبول می‌رویم.','می‌گوییم go on a trip.','Biz İstanbul’a bir geziye çıkıyoruz.','“Go on a trip” deriz.')),
+  Q('mc','Where do trains and buses stop for passengers?','station','garden','kitchen','Passengers wait at a station.',null,TT('قطارها و اتوبوس‌ها کجا برای مسافران می‌ایستند؟','station یعنی ایستگاه.','Tren ve otobüsler yolcular için nerede durur?','Station “istasyon” demektir.')),
+  Q('mc','What do you carry your clothes in when you travel?','suitcase','envelope','bottle','A suitcase carries your clothes.',null,TT('وقتی سفر می‌کنید لباس‌هایتان را در چه چیزی می‌برید؟','suitcase یعنی چمدان.','Seyahat ederken kıyafetlerini neyin içinde taşırsın?','Suitcase “bavul” demektir.')),
+  B('Put the words in order.',['We','are','at','the','airport'],'First "we", then "are", then the place.','airport',TT(BQ[0],'We are at the airport یعنی ما در فرودگاه هستیم.',BQ[1],'We are at the airport “Havalimanındayız” demektir.')),
+  B('Put the words in order.',['The','train','leaves','at','nine'],'With "the train", the verb takes -s: leaves.','train',TT(BQ[0],'The train leaves at nine یعنی قطار ساعت نه حرکت می‌کند.',BQ[1],'The train leaves at nine “Tren dokuzda kalkar” demektir.')),
+  B('Put the words in order.',['I','need','a','map','of','the','city'],'First "I need", then "a map", then "of the city".','map',TT(BQ[0],'I need a map of the city یعنی من به یک نقشه‌ی شهر نیاز دارم.',BQ[1],'I need a map of the city “Şehrin bir haritasına ihtiyacım var” demektir.'))]},
+ {n:'Past simple',nn:{tr:'Geçmiş zaman',fa:'گذشته‌ی ساده'},cefr:'A2+',sky:['#0a2a3a','#134b5e','#2a6f73'],hl:['#1d5c66','#1f7a78','#2c8f7a'],
+  words:['went','ate','saw','bought','yesterday','last'],qs:[
+  Q('fill','Yesterday I ___ to the park.','went','go','going','"Went" is the past of "go".',null,TT('دیروز من به پارک ___.','went گذشته‌ی go است، یعنی رفتم.','Dün parka ___.','Went, go fiilinin geçmişidir: gittim.')),
+  Q('fill','She ___ a sandwich for lunch.','ate','eat','eating','"Ate" is the past of "eat".',null,TT('او برای ناهار ساندویچ ___.','ate گذشته‌ی eat است، یعنی خورد.','O öğle yemeğinde sandviç ___.','Ate, eat fiilinin geçmişidir: yedi.')),
+  Q('fill','We ___ a great film last night.','saw','see','sees','"Saw" is the past of "see".',null,TT('دیشب ما یک فیلم عالی ___.','saw گذشته‌ی see است، یعنی دیدیم.','Dün gece harika bir film ___.','Saw, see fiilinin geçmişidir: gördük.')),
+  Q('fill','He ___ a new bag yesterday.','bought','buy','buys','"Bought" is the past of "buy".',null,TT('او دیروز یک کیف نو ___.','bought گذشته‌ی buy است، یعنی خرید.','O dün yeni bir çanta ___.','Bought, buy fiilinin geçmişidir: aldı.')),
+  Q('fill','I ___ TV last night.','watched','watch','watching','Regular verbs take -ed in the past: watched.',null,TT('من دیشب تلویزیون ___.','فعل‌های باقاعده در گذشته ed می‌گیرند: watched.','Dün gece televizyon ___.','Düzenli fiiller geçmişte -ed alır: watched.')),
+  Q('fill','They ___ football last Sunday.','played','play','plays','Regular verbs take -ed in the past: played.',null,TT('آن‌ها یکشنبه‌ی گذشته فوتبال ___.','فعل‌های باقاعده در گذشته ed می‌گیرند: played.','Onlar geçen pazar futbol ___.','Düzenli fiiller geçmişte -ed alır: played.')),
+  Q('fill','Did you ___ your homework?','do','did','done','After "did", we use the base verb: do.',null,TT('آیا تکلیفت را ___؟','بعد از did فعل ساده می‌آید: do.','Ödevini ___ mu?','“Did” den sonra fiil yalın kalır: do.')),
+  Q('mc','Which word shows the past?','yesterday','tomorrow','now','Yesterday is a time in the past.',null,TT('کدام کلمه گذشته را نشان می‌دهد؟','yesterday یعنی دیروز.','Hangi kelime geçmişi gösterir?','Yesterday “dün” demektir.')),
+  Q('mc','What is the past of "go"?','went','goed','goes','"Go" is irregular: go becomes went.',null,TT('گذشته‌ی go چیست؟','go بی‌قاعده است: go می‌شود went.','“Go” fiilinin geçmişi nedir?','Go düzensizdir: go, went olur.')),
+  Q('mc','What is the past of "have"?','had','haved','has','"Have" is irregular: have becomes had.',null,TT('گذشته‌ی have چیست؟','have بی‌قاعده است: have می‌شود had.','“Have” fiilinin geçmişi nedir?','Have düzensizdir: have, had olur.')),
+  Q('mc','Which sentence is correct?','I visited my aunt.','I visit my aunt yesterday.','I visiting my aunt.','With "yesterday" we use a past verb: visited.',null,TT('کدام جمله درست است؟','با yesterday از فعل گذشته استفاده می‌کنیم: visited.','Hangi cümle doğru?','“Yesterday” ile geçmiş zaman fiili kullanılır: visited.')),
+  Q('fill','We stayed at home ___ weekend.','last','next','every','"Last weekend" means the weekend before this one.',null,TT('ما آخر هفته‌ی ___ در خانه ماندیم.','last weekend یعنی آخر هفته‌ی گذشته.','Geçen hafta sonu evde kaldık.','“Last weekend” geçen hafta sonu demektir.')),
+  Q('fill','She ___ not like the soup.','did','does','is','Past negative: did not + base verb.',null,TT('او سوپ را دوست نداشت.','منفی گذشته: did not + فعل ساده.','O çorbayı sevmedi.','Geçmiş olumsuz: did not + yalın fiil.')),
+  Q('mc','Which question fits "She bought a car"?','What did she buy?','What does she buy?','What she bought?','Past questions use did + the base verb.',null,TT('کدام سؤال برای «She bought a car» مناسب است؟','سؤال گذشته با did و فعل ساده ساخته می‌شود.','“She bought a car” için hangi soru uygun?','Geçmiş zaman soruları did + yalın fiil ile kurulur.')),
+  B('Put the words in order.',['I','went','to','school','yesterday'],'Subject, past verb, place, then time.','went',TT(BQ[0],'I went to school yesterday یعنی دیروز به مدرسه رفتم.',BQ[1],'I went to school yesterday “Dün okula gittim” demektir.')),
+  B('Put the words in order.',['She','ate','an','apple','last','night'],'Subject, past verb, thing, then time.','ate',TT(BQ[0],'She ate an apple last night یعنی او دیشب یک سیب خورد.',BQ[1],'She ate an apple last night “O dün gece bir elma yedi” demektir.')),
+  B('Put the words in order.',['We','saw','a','big','bird'],'Subject, past verb, then the thing we saw.','saw',TT(BQ[0],'We saw a big bird یعنی ما یک پرنده‌ی بزرگ دیدیم.',BQ[1],'We saw a big bird “Büyük bir kuş gördük” demektir.'))]}
 ];
 let qsel=[];
 
@@ -259,12 +321,14 @@ for(let x=140,i=0;x<LEN;x+=150+(i*53%90),i++){if(segs.some(s=>x>s[0]+30&&x<s[1]-
 const FL=[];for(let x=120,i=0;x<LEN-120;x+=34+(i*29%38),i++){if(!segs.some(s=>x>s[0]+14&&x<s[1]-14))continue;if(spikeL.some(([sx,w])=>x>sx-14&&x<sx+w+14))continue;if(CP.some(c=>Math.abs(c-x)<20))continue;FL.push({x,t:i%3?0:1,c:['#ff6a8d','#ffd84a','#ffffff','#c9a0ff','#ff9a3d'][i%5],h:7+(i*13%7)});}
 const BF=Array.from({length:14},(_,i)=>({x:300+i*370,y:GY-70-(i*23%50),p:i*2.3,c:['#ff8fb1','#ffd84a','#8fd3ff','#c9a0ff'][i%4]}));
 
-let p,hearts,coinN,coinTot,coinL,slimes,wtok,parts=[],shake=0,score,corr,asked,seen,cpDone,toast={t:0,s:''},winT=0,celeT=0,birds=[],combo=0,pw={sh:0,mag:0,dj:0},pus=[],wrongRun=new Set(),vfrom='menu';
+let p,hearts,coinN,coinTot,coinL,slimes,wtok,parts=[],shake=0,score,corr,asked,seen,cpDone,toast={t:0,s:''},winT=0,celeT=0,birds=[],combo=0,pw={sh:0,mag:0,dj:0},pus=[],wrongRun=new Set(),vfrom='menu',bossOn=false,bs={},prac=false,lastOk=0,bossPool=[],coinLast=-9,coinStreak=0;
+const BOSSX=4950;
+const NIGHT=[0,0,0,1,0,1];
 const mult=c=>c>=4?3:c>=2?2:1;
 function reset(i){
   cur=i;qsel=shuffle(LV[i].qs.slice()).sort((a,b)=>(sv.vocab[b.w]?1:0)-(sv.vocab[a.w]?1:0)).slice(0,CP.length);
   p={dj2:0,x:60,y:GY,vx:0,vy:0,f:1,g:true,ph:0,inv:0,coy:0,buf:0,safe:60,gy:GY,sq:0,dt:0};
-  combo=0;pw={sh:0,mag:0,dj:0};wrongRun=new Set();
+  combo=0;pw={sh:0,mag:0,dj:0};wrongRun=new Set();prac=false;bossOn=false;bs={x:0,y:-90,vy:0,land:0,hp:3,max:3,ph:'',t:0,flash:0,dx:0,did:0,done:0};musT=0;musStep=0;
   pus=shuffle(['sh','mag','dj','hp','sh','mag']).map((t,k)=>({x:[330,1560,1960,2780,3700,5000][k],y:GY-62,t,got:0}));
   hearts=3;coinN=0;score=0;corr=0;asked=0;seen=new Set();cpDone=[];parts=[];cam=0;winT=0;toast.t=0;
   coinL=[];
@@ -324,7 +388,7 @@ const kd={l:0,r:0,j:0},syncKeys=()=>{inp.l=kd.l;inp.r=kd.r;};
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&state==='play')pause();});
 
 /* ---------- flow ---------- */
-function pause(){if(state!=='play')return;state='pause';relAll();show('pause');}
+function pause(){if(state!=='play')return;state='pause';$('mu').textContent=tx(sv.music?'musOn':'musOff');relAll();show('pause');}
 function resume(){if(state!=='pause')return;state='play';show('');syncKeys();}
 function menu(){state='menu';relAll();ctl(0);
   const box=$('lv');box.innerHTML='';
@@ -341,9 +405,10 @@ function openVocab(from){
     r.innerHTML='<button class="spk" aria-label="Listen">🔊</button><div class="vt"><b dir="ltr"></b><div class="vx" dir="ltr"></div>'+(h?'<div class="tl"></div>':'')+'</div>';
     r.querySelector('b').textContent=o.w;r.querySelector('.vx').textContent=o.ex||'';if(h){const t=r.querySelector('.tl');t.dir=sv.lang==='fa'?'rtl':'ltr';t.textContent='💡 '+h;}
     const sb=r.querySelector('.spk');if(!TTS)sb.style.display='none';sb.onclick=()=>{const m=sv.mute;sv.mute=0;say(o.w);sv.mute=m;};L.appendChild(r);});
+  $('vprac').style.display=ks.length?'inline-block':'none';
   show('vb');
 }
-$('vbtn').onclick=()=>openVocab('menu');$('rvb').onclick=()=>openVocab('res');
+$('vprac').onclick=startPractice;$('vbtn').onclick=()=>openVocab('menu');$('rvb').onclick=()=>openVocab('res');
 $('vback').onclick=()=>{hush();if(vfrom==='res')show('res');else menu();};
 function start(i){
   if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}
@@ -353,7 +418,7 @@ function start(i){
   relAll();reset(i);state='play';show('');ctl(1);sfx(520,.15,'square',.05,900);
 }
 $('sn').onclick=()=>setMute(!sv.mute);$('M').onclick=()=>setMute(!sv.mute);
-$('P').onclick=pause;$('rs').onclick=resume;$('rt').onclick=()=>start(cur);$('mn').onclick=menu;
+$('mu').onclick=()=>{sv.music=sv.music?0:1;$('mu').textContent=tx(sv.music?'musOn':'musOff');save();};$('P').onclick=pause;$('rs').onclick=resume;$('rt').onclick=()=>start(cur);$('mn').onclick=menu;
 $('rp').onclick=()=>start(cur);$('rn').onclick=()=>start(cur+1);$('rmn').onclick=menu;
 
 /* ---------- quiz ---------- */
@@ -371,7 +436,7 @@ let qi=0,qdone=false;
 function openQuiz(i){
   qi=i;qdone=false;state='qz';relAll();ctl(0);
   const q=qsel[i];
-  $('qh').textContent=tx('qn').replace('{i}',i+1).replace('{n}',qsel.length)+' · '+tx(q.t==='pic'?'tPic':q.t==='build'?'tBuild':q.t==='fill'?'tFill':'tVoc');
+  $('qh').textContent=(bossOn&&bs.ph==='ask'?tx('bossH').replace('{h}',bs.hp):tx('qn').replace('{i}',i+1).replace('{n}',prac?qsel.length:CP.length))+' · '+tx(q.t==='pic'?'tPic':q.t==='build'?'tBuild':q.t==='fill'?'tFill':'tVoc');
   $('qp').textContent=q.q;$('qt').textContent=tl(q,0);$('qt').dir=sv.lang==='fa'?'rtl':'ltr';$('qs').style.display=TTS?'inline-block':'none';$('qf').innerHTML='';$('qn').style.display='none';
   const ic=$('qi');ic.style.display=q.t==='pic'?'block':'none';
   if(q.t==='pic'){const g=ic.getContext('2d');g.clearRect(0,0,72,72);if(q.x[0]==='#')IC.sw(g,q.x);else IC[q.x](g);}
@@ -395,22 +460,60 @@ function finishQ(ok,btn){
   document.querySelectorAll('#qa .ans').forEach(b=>{b.disabled=true;if(q.t!=='build'){if(b.textContent===q.a){b.classList.add('good');b.textContent='✓ '+b.textContent;}else if(b===btn){b.classList.add('bad');b.textContent='✗ '+b.textContent;}}});
   let pts=0,m=1;
   const vk=q.w;
-  if(ok){corr++;combo++;m=mult(combo);pts=100*m;score+=pts;if(sv.vocab[vk]){sv.vocab[vk].m=(sv.vocab[vk].m|0)+1;if(sv.vocab[vk].m>=2)delete sv.vocab[vk];}
-    if(combo===3){pw.sh=1;toast.t=2.2;toast.s=tx('cmbShield');}sfx(660,.12,'square',.05,990);setTimeout(()=>sfx(990,.2,'square',.05,1320),130);}else{combo=0;const o=sv.vocab[vk]||{n:0};sv.vocab[vk]={w:vk,ex:q.ex,l:q.l||null,n:o.n+1,m:0};wrongRun.add(vk);sfx(200,.3,'sawtooth',.05,120);}
+  if(ok){lastOk=1;corr++;if(prac){m=1;pts=0;}else{combo++;m=mult(combo);pts=100*m;score+=pts;}if(sv.vocab[vk]){sv.vocab[vk].m=(sv.vocab[vk].m|0)+1;if(sv.vocab[vk].m>=2)delete sv.vocab[vk];}
+    if(!prac&&combo===3){pw.sh=1;toast.t=2.2;toast.s=tx('cmbShield');}sfx(660,.12,'square',.05,990);setTimeout(()=>sfx(990,.2,'square',.05,1320),130);}else{lastOk=0;if(!prac)combo=0;const o=sv.vocab[vk]||{n:0};sv.vocab[vk]={w:vk,ex:q.ex,l:q.l||null,n:o.n+1,m:0};wrongRun.add(vk);sfx(200,.3,'sawtooth',.05,120);}
   save();
   const dr=sv.lang==='fa'?'rtl':'ltr';
-  $('qf').innerHTML=`<div dir="${dr}">${ok?'<b class="ok">✓ '+tx('okp').replace('{p}',pts)+(m>1?' 🔥 '+tx('cmb').replace('{m}',m):'')+'</b>':'<b class="no">✗ '+tx('no')+'</b>'} ${tx('ans')} <b dir="ltr">${q.a}</b></div><div dir="ltr">${q.ex}</div>`+(sv.lang!=='en'&&q.l?`<div class="tl" dir="${dr}">💡 ${tl(q,1)}</div>`:'');
+  $('qf').innerHTML=`<div dir="${dr}">${ok?'<b class="ok">✓ '+(prac?tx('okq'):tx('okp').replace('{p}',pts))+(m>1?' 🔥 '+tx('cmb').replace('{m}',m):'')+'</b>':'<b class="no">✗ '+tx('no')+'</b>'} ${tx('ans')} <b dir="ltr">${q.a}</b></div><div dir="ltr">${q.ex}</div>`+(sv.lang!=='en'&&q.l?`<div class="tl" dir="${dr}">💡 ${tl(q,1)}</div>`:'');
   setTimeout(()=>say(spkText()),ok?400:150);
-  const n=$('qn');n.style.display='inline-block';n.textContent=tx(qi===CP.length-1?'contFlag':'cont');
+  const n=$('qn');n.style.display='inline-block';n.textContent=tx(prac&&qi===qsel.length-1?'back':'cont');
 }
 const spkText=()=>{const q=qsel[qi];return qdone?(q.t==='fill'?q.q.replace('___',q.a):q.a):(q.t==='fill'?q.q.replace('___','blank'):q.q);};
 $('qs').onclick=()=>say(spkText());
 $('qn').onclick=()=>{
   if(state!=='qz'||!qdone)return;hush();
+  if(prac){if(qi+1<qsel.length)openQuiz(qi+1);else endPractice();return;}
+  if(bossOn){show('');state='boss';bs.t=0;bs.did=0;
+    if(lastOk){bs.hp--;bs.flash=.5;score+=150;shake=.2;toast.t=1.2;toast.s=tx('bossHit');spawn(bs.x,GY-50,16,['#ffd84a','#ffffff','#ff9a3d'],130,'star');sfx(180,.18,'sawtooth',.07,60);sfx(520,.12,'square',.05,900);bs.ph='hit';}
+    else{bs.ph='atk';sfx(120,.3,'sawtooth',.07,60);}
+    return;}
   cpDone[qi]=true;p.safe=Math.max(p.safe,CP[qi]);p.buf=0;p.inv=Math.max(p.inv,.6);
   show('');ctl(1);state='play';syncKeys();sfx(520,.1,'square',.04,780);
 };
 
+/* ---------- boss + practice ---------- */
+function startPractice(){
+  const seenW=new Set(),all=shuffle(LV.flatMap(l=>l.qs).filter(q=>sv.vocab[q.w]));
+  const pick=all.filter(q=>!seenW.has(q.w)&&seenW.add(q.w)).slice(0,5);
+  if(!pick.length)return;
+  prac=true;qsel=pick;relAll();openQuiz(0);
+}
+function endPractice(){prac=false;state=vfrom==='res'?'res':'menu';hush();openVocab(vfrom);}
+function startBoss(){
+  state='boss';relAll();ctl(0);p.vx=0;p.vy=0;bossOn=true;
+  bs.ph='in';bs.t=0;bs.x=p.x+200;bs.y=-90;bs.vy=0;bs.land=0;bs.hp=bs.max;bs.flash=0;bs.dx=0;
+  bossPool=shuffle(LV[cur].qs.filter(q=>!qsel.includes(q)));
+  toast.t=2.6;toast.s=tx('bossIn');sfx(110,.6,'sawtooth',.07,50);
+}
+function askBoss(){
+  bs.ph='ask';if(!bossPool.length)bossPool=shuffle(LV[cur].qs.filter(q=>q!==qsel[qsel.length-1]));
+  qsel.push(bossPool.pop());openQuiz(qsel.length-1);
+}
+function updateBoss(dt){
+  bs.t+=dt;p.inv-=dt;bs.flash=Math.max(0,bs.flash-dt);
+  cam+=(Math.max(0,Math.min(LEN-W,p.x+110-W*.5))-cam)*Math.min(1,dt*4);
+  if(bs.ph==='in'){bs.vy+=1100*dt;bs.y=Math.min(GY,bs.y+bs.vy*dt);
+    if(bs.y>=GY&&!bs.land){bs.land=1;shake=.4;spawn(bs.x,GY,14,'#f3e3b5',60,'dust');sfx(90,.3,'sawtooth',.08,40);}
+    if(bs.t>2)askBoss();}
+  else if(bs.ph==='hit'){if(bs.t>.9){if(bs.hp<=0){bs.ph='dead';bs.t=0;shake=.4;sfx(300,.5,'sawtooth',.07,40);}else askBoss();}}
+  else if(bs.ph==='atk'){bs.dx=-Math.sin(Math.min(1,bs.t/.6)*Math.PI)*90;
+    if(bs.t>.28&&!bs.did){bs.did=1;p.inv=0;hurt(-1);if(state==='boss'){p.vx=0;p.vy=0;p.g=true;p.y=GY;}}
+    if(bs.t>1.1&&state==='boss'){bs.dx=0;askBoss();}}
+  else if(bs.ph==='dead'){
+    if(Math.random()<.7)spawn(bs.x+(Math.random()-.5)*70,GY-20-Math.random()*70,1,['#ffd84a','#ff6a8d','#6fd0ff','#7ee06a'],90,'conf');
+    if(bs.t>1.6){bossOn=false;bs.done=1;bs.ph='';score+=300;toast.t=2;toast.s=tx('bossDown');state='play';ctl(1);syncKeys();p.inv=.8;p.safe=Math.max(p.safe,BOSSX);
+      spawn(bs.x,GY-40,34,['#ffd84a','#ff6a8d','#6fd0ff','#7ee06a'],170,'conf');sfx(660,.3,'square',.06,1320);setTimeout(()=>sfx(990,.3,'square',.05,1500),150);}}
+}
 /* ---------- results ---------- */
 function endRun(win){
   if(!win){showRes(false);return;}
@@ -431,7 +534,7 @@ function showRes(win){
   $('rm').textContent=tx('res')(win,acc,n,corr,asked,win&&!more);
   $('rw').innerHTML=[...seen].map(w=>`<span>${w}</span>`).join('')+wtok.filter(w=>w.got&&!seen.has(w.w)).map(w=>`<span>${w.w}</span>`).join('');
   $('rn').style.display=more?'inline-block':'none';
-  show('res');if(win)sfx(660,.4,'square',.05,1200);
+  show('res');if(win){sfx(660,.4,'square',.05,1200);for(let k=0;k<st;k++)setTimeout(()=>sfx(880*Math.pow(1.26,k),.25,'triangle',.06,880*Math.pow(1.26,k)*1.2),300+k*280);}
 }
 
 /* ---------- game logic ---------- */
@@ -441,7 +544,7 @@ function spawn(x,y,n,col,sp,kind){
     parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-(kind==='dust'?10:40),l,l0:l,c:Array.isArray(col)?col[Math.random()*col.length|0]:col,k:kind||0,r:2+Math.random()*2,a:Math.random()*6.28});}
 }
 function hurt(dir){
-  if(p.inv>0||state!=='play')return;
+  if(p.inv>0||(state!=='play'&&state!=='boss'))return;
   if(pw.sh){pw.sh=0;p.inv=1.2;shake=.15;spawn(p.x,p.y-20,14,['#8fe3ff','#ffffff'],110,'star');sfx(500,.2,'triangle',.06,250);toast.t=1.4;toast.s=tx('shBreak');return;}
   hearts--;p.inv=1.6;p.vy=-300;p.vx=dir*160;p.g=false;shake=.25;
   spawn(p.x,p.y-20,10,'#ff5a6a');sfx(220,.25,'sawtooth',.06,70);
@@ -489,7 +592,7 @@ function update(dt){
     if(u.t==='sh'){pw.sh=1;toast.s=tx('shGot');}else if(u.t==='mag'){pw.mag=10;toast.s=tx('magGot');}else if(u.t==='dj'){pw.dj=12;toast.s=tx('djGot');}
     else if(hearts<3){hearts++;toast.s=tx('hpGot');}else{score+=50;toast.s=tx('hpFull');}}
   if(pw.mag>0)for(const c of coinL){if(c.got)continue;const dx=p.x-c.x,dy=p.y-18-c.y,d=Math.hypot(dx,dy);if(d<140&&d>1){c.x+=dx/d*320*dt;c.y+=dy/d*320*dt;}}
-  for(const c of coinL)if(!c.got&&Math.abs(c.x-p.x)<18&&Math.abs(c.y-(p.y-18))<24){c.got=1;coinN++;score+=10;spawn(c.x,c.y,6,['#ffd84a','#fff3a8'],85,'star');sfx(880,.12,'square',.04,1320);}
+  for(const c of coinL)if(!c.got&&Math.abs(c.x-p.x)<18&&Math.abs(c.y-(p.y-18))<24){c.got=1;coinN++;score+=10;spawn(c.x,c.y,6,['#ffd84a','#fff3a8'],85,'star');{coinStreak=T-coinLast<.7?Math.min(coinStreak+1,8):0;coinLast=T;const cf=880*Math.pow(1.0595,coinStreak*2);sfx(cf,.12,'square',.04,cf*1.5);}}
   for(const w of wtok)if(!w.got&&Math.abs(w.x-p.x)<26&&Math.abs(w.y-(p.y-18))<26){w.got=1;seen.add(w.w);score+=50;toast.t=1.6;toast.s=tx('newword')+' '+w.w;say(w.w);spawn(w.x,w.y,8,['#8fe3ff','#ffffff'],95,'star');sfx(740,.1,'triangle',.05,1100);}
   for(const [x,w] of spikeL)if(p.y>GY-14&&p.x+8>x&&p.x-8<x+w)hurt(-p.f);
   for(const s of slimes){
@@ -512,6 +615,7 @@ function update(dt){
   if(p.x>FIN){endRun(true);return;}
   cam+=(Math.max(0,Math.min(LEN-W,p.x-W*.35))-cam)*Math.min(1,dt*6);
   for(let i=0;i<CP.length;i++)if(!cpDone[i]&&p.x>=CP[i]){openQuiz(i);return;}
+  if(!bs.done&&!bs.ph&&p.x>=BOSSX&&p.g&&CP.every((c,i)=>cpDone[i]))startBoss();
 }
 
 /* ---------- drawing ---------- */
@@ -531,7 +635,7 @@ function hills(par,base,amp,fr,col,ph){
   X.lineTo(W+24,H+12);X.fill();
 }
 const STARS=Array.from({length:70},(_,i)=>({x:(i*97%100)/100,y:(i*53%62)/100,r:.6+(i%3)*.5,p:i*1.7}));
-const SUN=[{x:.2,y:112,r:24,c:'#ffe3b0',g:'255,200,140'},{x:.74,y:56,r:22,c:'#fff6c8',g:'255,240,180'},{x:.78,y:128,r:34,c:'#ffb067',g:'255,150,90'}];
+const SUN=[{x:.2,y:112,r:24,c:'#ffe3b0',g:'255,200,140'},{x:.74,y:56,r:22,c:'#fff6c8',g:'255,240,180'},{x:.78,y:128,r:34,c:'#ffb067',g:'255,150,90'},{x:.3,y:74,r:20,c:'#f2fbff',g:'190,235,255'},{x:.7,y:60,r:20,c:'#fff',g:'255,255,255'}];
 function peaks(par,base,h,col){
   const g=X.createLinearGradient(0,base-h,0,H+12);g.addColorStop(0,col);g.addColorStop(1,shade(col,-18));
   X.fillStyle=g;X.beginPath();X.moveTo(0,H+12);
@@ -540,7 +644,7 @@ function peaks(par,base,h,col){
 }
 function cloud(cx,cy,sc,a){X.fillStyle='rgba(255,255,255,'+a+')';X.beginPath();X.ellipse(cx,cy,34*sc,11*sc,0,0,6.3);X.ellipse(cx+20*sc,cy-8*sc,22*sc,10*sc,0,0,6.3);X.ellipse(cx-20*sc,cy-4*sc,20*sc,8*sc,0,0,6.3);X.fill();}
 function drawSky(){
-  const L=LV[cur],night=cur===3,g=X.createLinearGradient(0,-offY,0,GY);
+  const L=LV[cur],night=!!NIGHT[cur],g=X.createLinearGradient(0,-offY,0,GY);
   g.addColorStop(0,L.sky[0]);g.addColorStop(.55,L.sky[1]);g.addColorStop(1,L.sky[2]);
   X.fillStyle=g;X.fillRect(-10,-offY-6,W+20,H+offY+20);
   if(night){
@@ -572,7 +676,7 @@ function drawFlower(f,cx){
   else{X.fillStyle=f.c;for(let k=0;k<5;k++){const a=k*1.2566;X.beginPath();X.arc(sx+sw+Math.cos(a)*2.7,top+Math.sin(a)*2.7,1.9,0,6.3);X.fill();}X.fillStyle='#ffe27a';X.beginPath();X.arc(sx+sw,top,1.5,0,6.3);X.fill();}
 }
 function drawCritters(cx,L,R){
-  if(cur===3){
+  if(NIGHT[cur]){
     for(const b of BF){const bx=b.x+Math.sin(T*.6+b.p)*70-cx,by=b.y+Math.sin(T*1.3+b.p*1.3)*18;if(bx<-20||bx>W+20)continue;
       const a=.35+.55*Math.abs(Math.sin(T*1.7+b.p));X.fillStyle='rgba(255,240,150,'+a*.28+')';X.beginPath();X.arc(bx,by,7,0,6.3);X.fill();X.fillStyle='rgba(255,248,190,'+a+')';X.beginPath();X.arc(bx,by,2,0,6.3);X.fill();}
     return;
@@ -608,6 +712,27 @@ function drawBird(sx,y,d,fl){
   X.strokeStyle=OL;X.lineWidth=1.5;X.beginPath();X.moveTo(2.5,-8.5);X.lineTo(9.5,-5.8);X.stroke();
   X.fillStyle='#6fdcff';X.beginPath();X.ellipse(-2,-1+f*5,10,4.8,-.4-f*.5,0,6.3);X.fill();X.lineWidth=1.3;X.strokeStyle=OL;X.stroke();
   X.restore();
+}
+function drawBoss(sx,sy){
+  const dead=bs.ph==='dead',sc=dead?Math.max(.01,1-bs.t/1.6):1,fl=bs.flash>0,at=bs.ph==='atk',q=fl?Math.sin(bs.flash*40)*.08:0;
+  const col=['#8e5bd6','#e0673e','#2f9e8f','#5a6bd6','#d65b9a','#4aa3df'][cur]||'#8e5bd6',bob=bs.ph==='in'?0:Math.sin(T*3)*2;
+  X.save();X.translate(sx,sy+bob);X.scale(sc*(1+q),sc*(1-q));if(dead)X.rotate(Math.sin(bs.t*30)*.08);
+  X.fillStyle='rgba(0,0,0,.2)';X.beginPath();X.ellipse(0,1,50,8,0,0,6.3);X.fill();
+  X.fillStyle=shade(col,-25);X.beginPath();X.ellipse(-24,-4,17,8,0,0,6.3);X.ellipse(24,-4,17,8,0,0,6.3);X.fill();
+  const g=X.createRadialGradient(-12,-70,6,0,-46,56);g.addColorStop(0,shade(col,30));g.addColorStop(1,shade(col,-18));
+  X.fillStyle=fl?'#fff':g;X.beginPath();X.ellipse(0,-44,50,44,0,0,6.3);X.fill();
+  X.fillStyle=fl?'#fff':shade(col,55);X.beginPath();X.ellipse(0,-30,28,24,0,0,6.3);X.fill();
+  X.fillStyle='#fff3d1';X.beginPath();X.moveTo(-34,-76);X.lineTo(-44,-104);X.lineTo(-20,-84);X.fill();X.beginPath();X.moveTo(34,-76);X.lineTo(44,-104);X.lineTo(20,-84);X.fill();
+  X.fillStyle=shade(col,-8);X.beginPath();X.ellipse(-52,-38+(at?-16:0),11,15,.3,0,6.3);X.ellipse(52,-38+(at?-16:0),11,15,-.3,0,6.3);X.fill();
+  for(const e of [-17,17]){X.fillStyle='#fff';X.beginPath();X.arc(e,-58,9.5,0,6.3);X.fill();
+    if(fl||dead){X.strokeStyle='#231a4a';X.lineWidth=2.5;X.beginPath();X.moveTo(e-5,-63);X.lineTo(e+5,-53);X.moveTo(e+5,-63);X.lineTo(e-5,-53);X.stroke();}
+    else{X.fillStyle='#231a4a';X.beginPath();X.arc(e-3,-57,4.6,0,6.3);X.fill();}}
+  X.strokeStyle='#2b1a4a';X.lineWidth=3.5;X.lineCap='round';X.beginPath();X.moveTo(-28,-73);X.lineTo(-9,-66);X.moveTo(28,-73);X.lineTo(9,-66);X.stroke();
+  if(at||fl){X.fillStyle='#3a0f2a';X.beginPath();X.ellipse(0,-37,19,at?13:8,0,0,6.3);X.fill();X.fillStyle='#ff7a8a';X.beginPath();X.ellipse(0,-32,10,5,0,0,6.3);X.fill();}
+  else{X.strokeStyle='#3a0f2a';X.lineWidth=4;X.beginPath();X.arc(0,-40,16,.15*Math.PI,.85*Math.PI);X.stroke();}
+  X.fillStyle='#fff';for(const tx0 of [-9,9]){X.beginPath();X.moveTo(tx0-4,at?-46:-33);X.lineTo(tx0+4,at?-46:-33);X.lineTo(tx0,at?-38:-26);X.fill();}
+  X.restore();
+  if(!dead&&bs.ph!=='in'){X.fillStyle='rgba(22,18,80,.6)';rr(sx-40,sy-146,80,24,12);X.fill();for(let i=0;i<bs.max;i++)heart(sx-22+i*22,sy-134,8,i<bs.hp?'#ff4d6d':'rgba(255,255,255,.3)');}
 }
 function drawPlayer(){
   const sx=Math.round(p.x-cam)+4,sy=p.y-3;
@@ -726,6 +851,7 @@ function draw(){
     X.fillStyle='#173';X.fillRect(sx-7+s.d*2,GY-11,3,5);X.fillRect(sx+3+s.d*2,GY-11,3,5);
   }
   for(const b of birds){if(!b.alive||b.x<L||b.x>R)continue;drawBird(b.x-cx,b.y,b.d,T+b.ph);}
+  if(bossOn&&!bs.done)drawBoss(bs.x+bs.dx-cx,bs.y);
   drawPlayer();
   if(pw.sh){const bx=p.x-cx,by=p.y-18,r=27+Math.sin(T*5)*1.5;X.fillStyle='rgba(143,227,255,.2)';X.beginPath();X.arc(bx,by,r,0,6.3);X.fill();X.strokeStyle='rgba(190,240,255,.9)';X.lineWidth=2;X.stroke();}
   if(pw.mag>0){X.strokeStyle='rgba(255,120,120,'+(.25+.2*Math.sin(T*6))+')';X.lineWidth=2;X.beginPath();X.arc(p.x-cx,p.y-18,40+((T*60)%10),0,6.3);X.stroke();}
@@ -743,7 +869,8 @@ function draw(){
     else if(q.k==='conf'){X.save();X.translate(px,q.y);X.rotate(q.a+T*8);X.fillRect(-3,-1.5,6,3);X.restore();}
     else X.fillRect(px-2,q.y-2,4,4);}
   X.globalAlpha=1;
-  if(cur===3){X.fillStyle='rgba(12,10,70,.16)';X.fillRect(-10,-offY-6,W+20,H+offY+20);}
+  if(cur===4){X.fillStyle='rgba(120,200,255,.07)';X.fillRect(-10,-offY-6,W+20,H+offY+20);}
+  if(NIGHT[cur]){X.fillStyle='rgba(12,10,70,.16)';X.fillRect(-10,-offY-6,W+20,H+offY+20);}
   else if(cur===2){X.fillStyle='rgba(255,110,60,.07)';X.fillRect(-10,-offY-6,W+20,H+offY+20);}
   X.restore();
   if(state==='menu')return;
@@ -774,6 +901,7 @@ function frame(t){
   if(document.hidden)return;
   T+=dt;if(shake>0)shake-=dt;if(toast.t>0)toast.t-=dt;
   if(state==='play'){const n=Math.ceil(dt/.0167)||1;for(let i=0;i<n&&state==='play';i++)update(dt/n);}
+  else if(state==='boss')updateBoss(dt);
   else if(state==='menu'){cam+=70*dt;if(cam>LEN-W-10)cam=0;}
   else if(state==='cele'){celeT+=dt;if(Math.random()<.3)spawn(cam+Math.random()*W,30,1,['#ffd84a','#ff6a8d','#6fd0ff','#7ee06a'],40,'conf');if(celeT>1.7)showRes(true);}
   else if(state==='res'&&hearts>0&&p.x>FIN){winT+=dt;if(winT<2.5&&Math.random()<.5)spawn(cam+Math.random()*W,40,1,['#ffd84a','#ff6a8d','#6fd0ff','#7ee06a'],40,'conf');}
