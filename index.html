@@ -21,7 +21,12 @@ button,.lgb,.ans,.pb{font-family:inherit;touch-action:manipulation}
 #hud button{width:44px;height:44px;border-radius:14px;border:1.5px solid rgba(255,255,255,.4);background:rgba(22,18,80,.5);color:#fff;font-size:17px;font-weight:700;font-family:inherit}
 #M.off{text-decoration:line-through;opacity:.7}
 .scr{position:fixed;inset:0;display:none;background:radial-gradient(120% 90% at 50% 20%,rgba(58,46,170,.62),rgba(18,14,70,.88));overflow:auto;padding:8px;box-sizing:border-box;z-index:5}
-.scr.on{display:flex}
+.scr.on{display:flex;animation:scrIn .25s ease both}
+.scr.on .card{animation:cardIn .34s cubic-bezier(.2,.9,.3,1.15) both}
+.scr.out{opacity:0;transition:opacity .2s ease;pointer-events:none;animation:none}
+@keyframes scrIn{from{opacity:0}to{opacity:1}}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.scr.on,.scr.on .card{animation:none}}
 .card{margin:auto;width:min(96vw,640px);text-align:center;display:flex;flex-direction:column;align-items:center;gap:9px}
 #menu .card,#pause .card{padding:14px 16px;border-radius:30px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);box-shadow:0 24px 60px rgba(8,6,50,.45),inset 0 1px 0 rgba(255,255,255,.25)}
 .logo{display:flex;align-items:center;gap:8px;font-weight:600;font-size:16px;letter-spacing:.01em}
@@ -166,7 +171,7 @@ const BQ=['کلمه‌ها را به ترتیب بچین.','Kelimeleri sıraya k
 const WHAT=['این چیست؟','Bu nedir?'],COL=['این چه رنگی است؟','Bu hangi renk?'];
 /* Each level has a pool of questions. A random 5 are picked every time the level starts. */
 const LV=[
- {n:'Everyday words',nn:{tr:'Günlük kelimeler',fa:'لغت‌های روزمره'},cefr:'A1',sky:['#2f7bff','#8fd3ff','#ffd9a8'],hl:['#9fa9ee','#6fc3c9','#43a98a'],
+ {n:'Everyday words',nn:{tr:'Günlük kelimeler',fa:'لغت‌های روزمره'},cefr:'A1',sky:['#7aa9ff','#ffd0b0','#fff0d0'],hl:['#c3b6e8','#93cbc4','#62bd8c'],
   words:['house','book','school','day','pen','family'],qs:[
   Q('pic','What is this?','house','tree','cup','A house is a place where people live.','house',TT(WHAT[0],'house یعنی خانه. خانه جایی است که مردم در آن زندگی می‌کنند.',WHAT[1],'House “ev” demektir. Ev, insanların yaşadığı yerdir.')),
   Q('pic','What is this?','book','cup','fish','You read a book.','book',TT(WHAT[0],'book یعنی کتاب. کتاب می‌خوانید.',WHAT[1],'Book “kitap” demektir. Kitap okursun.')),
@@ -178,7 +183,7 @@ const LV=[
   Q('fill','I go to school every ___.','day','blue','run','"Every day" means each day.',null,TT('من هر ___ به مدرسه می‌روم.','every day یعنی هر روز.','Her ___ okula giderim.','Every day “her gün” demektir.')),
   Q('fill','There are seven ___ in a week.','days','pens','books','A week has seven days.',null,TT('در یک هفته هفت ___ وجود دارد.','day یعنی روز. یک هفته هفت روز دارد.','Bir haftada yedi ___ vardır.','Day “gün” demektir. Bir haftada yedi gün vardır.')),
   Q('fill','I live with my ___: mother, father and sister.','family','pen','door','Your family is the people you live with.',null,TT('من با ___ خودم زندگی می‌کنم: مادر، پدر و خواهر.','family یعنی خانواده.','Annem, babam ve kız kardeşimle, yani ___ ile yaşıyorum.','Family “aile” demektir.'))]},
- {n:'Food, animals, colors',nn:{tr:'Yiyecekler, hayvanlar, renkler',fa:'غذا، حیوانات، رنگ‌ها'},cefr:'A1',sky:['#ff7a8a','#ffb58a','#ffe6a8'],hl:['#d99bd0','#e8a07a','#79b86a'],
+ {n:'Food, animals, colors',nn:{tr:'Yiyecekler, hayvanlar, renkler',fa:'غذا، حیوانات، رنگ‌ها'},cefr:'A1',sky:['#2f7bff','#8fd3ff','#dff3ff'],hl:['#9fb4ee','#6fc3c9','#43a98a'],
   words:['apple','fish','blue','dog','banana','bread'],qs:[
   Q('pic','What is this?','apple','house','book','An apple is a fruit.','apple',TT(WHAT[0],'apple یعنی سیب. سیب یک میوه است.',WHAT[1],'Apple “elma” demektir. Elma bir meyvedir.')),
   Q('pic','What is this?','fish','tree','cup','A fish lives in water.','fish',TT(WHAT[0],'fish یعنی ماهی. ماهی در آب زندگی می‌کند.',WHAT[1],'Fish “balık” demektir. Balık suda yaşar.')),
@@ -192,7 +197,7 @@ const LV=[
   Q('mc','Which one is a fruit?','banana','bread','milk','A banana is a fruit. Bread and milk are not.',null,TT('کدام یک میوه است؟','banana یعنی موز. موز میوه است؛ نان و شیر میوه نیستند.','Hangisi bir meyvedir?','Banana “muz” demektir. Muz meyvedir; ekmek ve süt değildir.')),
   Q('mc','Which one do we drink?','milk','bread','apple','We drink milk. We eat bread and apples.',null,TT('کدام را می‌نوشیم؟','milk یعنی شیر. شیر می‌نوشیم؛ نان و سیب می‌خوریم.','Hangisini içeriz?','Milk “süt” demektir. Süt içeriz; ekmek ve elma yeriz.')),
   Q('fill','I eat an ___ every day.','apple','dog','blue','You can eat an apple. We use "an" before a vowel sound.',null,TT('من هر روز یک ___ می‌خورم.','apple یعنی سیب. قبل از صدای مصوت از an استفاده می‌کنیم.','Her gün bir ___ yerim.','Apple “elma” demektir. Ünlü sesinden önce “an” kullanırız.'))]},
- {n:'Actions and sentences',nn:{tr:'Eylemler ve cümleler',fa:'فعل‌ها و جمله‌ها'},cefr:'A1+',sky:['#17a58f','#7fe0c8','#f4f0b0'],hl:['#7fb0e8','#4fbfa6','#3a9a62'],
+ {n:'Actions and sentences',nn:{tr:'Eylemler ve cümleler',fa:'فعل‌ها و جمله‌ها'},cefr:'A1+',sky:['#4a3fb0','#ff7a8a','#ffc78a'],hl:['#8a5fb0','#c96a8f','#5f8f5f'],
   words:['fly','drink','read','small','run','sleep'],qs:[
   Q('fill','Birds can ___ in the sky.','fly','swim','cook','Birds have wings, so they can fly.',null,TT('پرنده‌ها می‌توانند در آسمان ___ کنند.','fly یعنی پرواز کردن. پرنده‌ها بال دارند.','Kuşlar gökyüzünde ___ bilir.','Fly “uçmak” demektir. Kuşların kanatları vardır.')),
   Q('fill','We ___ water when we are thirsty.','drink','eat','read','We drink water.',null,TT('وقتی تشنه‌ایم آب ___.','drink یعنی نوشیدن.','Susayınca su ___.','Drink “içmek” demektir.')),
@@ -205,7 +210,7 @@ const LV=[
   Q('mc',"What is the opposite of 'big'?",'small','tall','fast','Big and small are opposites.',null,TT('متضاد big چیست؟','big یعنی بزرگ و small یعنی کوچک.','“Big” kelimesinin zıt anlamlısı nedir?','Big “büyük”, small “küçük” demektir.')),
   Q('mc',"What is the opposite of 'hot'?",'cold','red','tall','Hot and cold are opposites.',null,TT('متضاد hot چیست؟','hot یعنی داغ و cold یعنی سرد.','“Hot” kelimesinin zıt anlamlısı nedir?','Hot “sıcak”, cold “soğuk” demektir.')),
   Q('mc','What do you do with a book?','read','drink','wear','You read a book.',null,TT('با کتاب چه کار می‌کنید؟','read یعنی خواندن.','Kitapla ne yaparsın?','Read “okumak” demektir.'))]},
- {n:'Basic grammar',nn:{tr:'Temel dil bilgisi',fa:'گرامر پایه'},cefr:'A2',sky:['#5a3fc0','#a78bf0','#ffc6e0'],hl:['#b79af0','#8a7ad8','#5a9a9a'],
+ {n:'Basic grammar',nn:{tr:'Temel dil bilgisi',fa:'گرامر پایه'},cefr:'A2',sky:['#0b0a38','#1b1a66','#3b2f8c'],hl:['#2e2c80','#2b5a92','#1f6b6b'],
   words:['is','am','are','goes','friends','bus'],qs:[
   Q('fill','She ___ happy.','is','are','am','Use "is" with she, he, and it.',null,TT('او خوشحال است.','با she، he و it از is استفاده می‌کنیم.','O mutlu.','She, he ve it ile “is” kullanılır.')),
   Q('fill','I ___ a student.','am','is','are','Use "am" with I.',null,TT('من یک دانش‌آموز هستم.','با I از am استفاده می‌کنیم.','Ben bir öğrenciyim.','I ile “am” kullanılır.')),
@@ -236,10 +241,10 @@ plats.forEach(q=>SOL.push({x:q[0],y:q[1],w:q[2],h:16,k:'p'}));
 const decor=[];
 for(let x=140,i=0;x<LEN;x+=150+(i*53%90),i++){if(segs.some(s=>x>s[0]+30&&x<s[1]-30))decor.push({x,t:i%3});}
 
-let p,hearts,coinN,coinTot,coinL,slimes,wtok,parts=[],shake=0,score,corr,asked,seen,cpDone,toast={t:0,s:''},winT=0;
+let p,hearts,coinN,coinTot,coinL,slimes,wtok,parts=[],shake=0,score,corr,asked,seen,cpDone,toast={t:0,s:''},winT=0,celeT=0;
 function reset(i){
   cur=i;qsel=shuffle(LV[i].qs.slice()).slice(0,CP.length);
-  p={x:60,y:GY,vx:0,vy:0,f:1,g:true,ph:0,inv:0,coy:0,buf:0,safe:60,gy:GY,sq:0};
+  p={x:60,y:GY,vx:0,vy:0,f:1,g:true,ph:0,inv:0,coy:0,buf:0,safe:60,gy:GY,sq:0,dt:0};
   hearts=3;coinN=0;score=0;corr=0;asked=0;seen=new Set();cpDone=[];parts=[];cam=0;winT=0;toast.t=0;
   coinL=[];
   const add=(x,y)=>coinL.push({x,y,got:0});
@@ -254,7 +259,10 @@ function reset(i){
 
 /* ---------- screens ---------- */
 const SC=['menu','pause','qz','res'];
-function show(id){SC.forEach(s=>$(s).classList.toggle('on',s===id));}
+const SCT={};
+function show(id){SC.forEach(s=>{const e=$(s);clearTimeout(SCT[s]);
+  if(s===id){e.classList.remove('out');e.classList.add('on');}
+  else if(e.classList.contains('on')){e.classList.add('out');SCT[s]=setTimeout(()=>e.classList.remove('on','out'),200);}});}
 function ctl(on){['L','R','J'].forEach(i=>$(i).style.display=on?'flex':'none');$('hud').style.display=on?'flex':'none';}
 
 /* ---------- input ---------- */
@@ -367,6 +375,11 @@ $('qn').onclick=()=>{
 
 /* ---------- results ---------- */
 function endRun(win){
+  if(!win){showRes(false);return;}
+  state='cele';relAll();ctl(0);celeT=0;p.vx=0;
+  spawn(p.x,p.y-40,40,['#ffd84a','#ff6a8d','#6fd0ff','#7ee06a'],170,'conf');spawn(p.x,p.y-40,10,['#ffd84a','#fff3a8'],120,'star');sfx(660,.3,'square',.05,1200);
+}
+function showRes(win){
   state='res';relAll();ctl(0);
   if(win)score+=hearts*50;
   const k=cur+1,acc=asked?Math.round(corr/asked*100):0,nb=score>(sv.best[k]||0),n=seen.size+wtok.filter(w=>w.got&&!seen.has(w.w)).length;
@@ -381,9 +394,10 @@ function endRun(win){
 }
 
 /* ---------- game logic ---------- */
-function spawn(x,y,n,col,sp){
-  for(let i=0;i<n&&parts.length<60;i++){const a=Math.random()*6.28,s=(.3+Math.random())*(sp||90);
-    parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-40,l:.5+Math.random()*.4,c:col});}
+function star(x,y,r,rot){X.save();X.translate(x,y);X.rotate(rot);X.beginPath();for(let i=0;i<8;i++){const q=i%2?r*.38:r,a=i*Math.PI/4;X.lineTo(Math.cos(a)*q,Math.sin(a)*q);}X.closePath();X.fill();X.restore();}
+function spawn(x,y,n,col,sp,kind){
+  for(let i=0;i<n&&parts.length<90;i++){const a=Math.random()*6.28,s=(.3+Math.random())*(sp||90),l=.5+Math.random()*.4;
+    parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-(kind==='dust'?10:40),l,l0:l,c:Array.isArray(col)?col[Math.random()*col.length|0]:col,k:kind||0,r:2+Math.random()*2,a:Math.random()*6.28});}
 }
 function hurt(dir){
   if(p.inv>0||state!=='play')return;
@@ -416,7 +430,8 @@ function update(dt){
       p.vy=0;
     }
   }
-  if(p.g&&!wasG&&pv>250){p.sq=.3;spawn(p.x,p.y,4,'#f3e3b5',50);}
+  if(p.g&&!wasG&&pv>250){p.sq=.3;spawn(p.x,p.y,5,'#f3e3b5',40,'dust');}
+  if(p.g&&Math.abs(p.vx)>60){p.dt-=dt;if(p.dt<=0){p.dt=.1;spawn(p.x-p.f*7,p.y-1,1,'#f3e3b5',14,'dust');}}
   if(p.sq)p.sq*=Math.pow(.001,dt);
   if(p.g&&Math.abs(p.vx)>20)p.ph+=dt*(8+Math.abs(p.vx)*.03);
   if(p.y>H+60){
@@ -424,14 +439,14 @@ function update(dt){
     if(state==='play'){p.x=p.safe;p.y=GY;p.vx=p.vy=0;p.g=true;p.gy=GY;p.inv=1.6;cam=Math.max(0,Math.min(LEN-W,p.x-W*.35));}
     return;
   }
-  for(const c of coinL)if(!c.got&&Math.abs(c.x-p.x)<18&&Math.abs(c.y-(p.y-18))<24){c.got=1;coinN++;score+=10;spawn(c.x,c.y,6,'#ffd84a',70);sfx(880,.12,'square',.04,1320);}
-  for(const w of wtok)if(!w.got&&Math.abs(w.x-p.x)<26&&Math.abs(w.y-(p.y-18))<26){w.got=1;seen.add(w.w);score+=50;toast.t=1.6;toast.s=tx('newword')+' '+w.w;say(w.w);spawn(w.x,w.y,8,'#8fe3ff',80);sfx(740,.1,'triangle',.05,1100);}
+  for(const c of coinL)if(!c.got&&Math.abs(c.x-p.x)<18&&Math.abs(c.y-(p.y-18))<24){c.got=1;coinN++;score+=10;spawn(c.x,c.y,6,['#ffd84a','#fff3a8'],85,'star');sfx(880,.12,'square',.04,1320);}
+  for(const w of wtok)if(!w.got&&Math.abs(w.x-p.x)<26&&Math.abs(w.y-(p.y-18))<26){w.got=1;seen.add(w.w);score+=50;toast.t=1.6;toast.s=tx('newword')+' '+w.w;say(w.w);spawn(w.x,w.y,8,['#8fe3ff','#ffffff'],95,'star');sfx(740,.1,'triangle',.05,1100);}
   for(const [x,w] of spikeL)if(p.y>GY-14&&p.x+8>x&&p.x-8<x+w)hurt(-p.f);
   for(const s of slimes){
     if(!s.alive)continue;
     s.x+=s.d*s.v*dt;if(s.x<s.a)s.d=1;if(s.x>s.b)s.d=-1;s.sq+=dt;
     if(hit(p.x-10,p.y-34,20,34,s.x-14,GY-20,28,20)){
-      if(p.vy>0&&p.y<GY-8){s.alive=0;p.vy=-380;score+=25;spawn(s.x,GY-10,10,'#7ee06a');sfx(200,.15,'square',.05,520);}
+      if(p.vy>0&&p.y<GY-8){s.alive=0;p.vy=-380;score+=25;spawn(s.x,GY-10,16,['#7ee06a','#ffd84a','#ff6a8d','#6fd0ff'],130,'conf');sfx(200,.15,'square',.05,520);}
       else hurt(p.x<s.x?-1:1);
     }
   }
@@ -457,19 +472,33 @@ function hills(par,base,amp,fr,col,ph){
   for(let sx=0;sx<=W+24;sx+=24){const wx=sx+cam*par;X.lineTo(sx,base-(Math.sin(wx*fr+ph)*amp+Math.sin(wx*fr*2.3+1)*amp*.4));}
   X.lineTo(W+24,H+12);X.fill();
 }
+const STARS=Array.from({length:70},(_,i)=>({x:(i*97%100)/100,y:(i*53%62)/100,r:.6+(i%3)*.5,p:i*1.7}));
+const SUN=[{x:.2,y:112,r:24,c:'#ffe3b0',g:'255,200,140'},{x:.74,y:56,r:22,c:'#fff6c8',g:'255,240,180'},{x:.78,y:128,r:34,c:'#ffb067',g:'255,150,90'}];
+function peaks(par,base,h,col){
+  const g=X.createLinearGradient(0,base-h,0,H+12);g.addColorStop(0,col);g.addColorStop(1,shade(col,-18));
+  X.fillStyle=g;X.beginPath();X.moveTo(0,H+12);
+  for(let sx=0;sx<=W+16;sx+=16){const wx=sx+cam*par,m=(1-Math.abs(Math.sin(wx*.0035+.7)))*h*.9+Math.abs(Math.sin(wx*.013))*h*.18;X.lineTo(sx,base-m);}
+  X.lineTo(W+16,H+12);X.fill();
+}
+function cloud(cx,cy,sc,a){X.fillStyle='rgba(255,255,255,'+a+')';X.beginPath();X.ellipse(cx,cy,34*sc,11*sc,0,0,6.3);X.ellipse(cx+20*sc,cy-8*sc,22*sc,10*sc,0,0,6.3);X.ellipse(cx-20*sc,cy-4*sc,20*sc,8*sc,0,0,6.3);X.fill();}
 function drawSky(){
-  const L=LV[cur],g=X.createLinearGradient(0,-offY,0,GY);
+  const L=LV[cur],night=cur===3,g=X.createLinearGradient(0,-offY,0,GY);
   g.addColorStop(0,L.sky[0]);g.addColorStop(.55,L.sky[1]);g.addColorStop(1,L.sky[2]);
   X.fillStyle=g;X.fillRect(-10,-offY-6,W+20,H+offY+20);
-  const sx=W*.78;
-  X.fillStyle='rgba(255,240,180,.25)';X.beginPath();X.arc(sx,74,46,0,6.3);X.fill();
-  X.fillStyle='rgba(255,240,180,.5)';X.beginPath();X.arc(sx,74,32,0,6.3);X.fill();
-  X.fillStyle='#fff6c8';X.beginPath();X.arc(sx,74,22,0,6.3);X.fill();
-  X.fillStyle='rgba(255,255,255,.85)';
-  for(let i=0;i<5;i++){
-    const cx=((i*230-cam*.12+T*8)%(W+320)+(W+320))%(W+320)-160,cy=40+(i*37%70);
-    X.beginPath();X.ellipse(cx,cy,34,11,0,0,6.3);X.ellipse(cx+20,cy-8,22,10,0,0,6.3);X.ellipse(cx-20,cy-4,20,8,0,0,6.3);X.fill();
+  if(night){
+    for(const st of STARS){const x=((st.x*W-cam*.02)%W+W)%W;X.fillStyle='rgba(255,255,255,'+(.4+.45*Math.sin(T*2+st.p))+')';X.beginPath();X.arc(x,st.y*H,st.r,0,6.3);X.fill();}
+    const mx=W*.78;X.fillStyle='rgba(244,241,216,.16)';X.beginPath();X.arc(mx,70,38,0,6.3);X.fill();
+    X.fillStyle='#f4f1d8';X.beginPath();X.arc(mx,70,21,0,6.3);X.fill();
+    X.fillStyle='#1d1a66';X.beginPath();X.arc(mx+8,64,18,0,6.3);X.fill();
+  }else{
+    const u=SUN[cur],sx=W*u.x;
+    X.fillStyle='rgba('+u.g+',.22)';X.beginPath();X.arc(sx,u.y,u.r*2.1,0,6.3);X.fill();
+    X.fillStyle='rgba('+u.g+',.45)';X.beginPath();X.arc(sx,u.y,u.r*1.45,0,6.3);X.fill();
+    X.fillStyle=u.c;X.beginPath();X.arc(sx,u.y,u.r,0,6.3);X.fill();
   }
+  for(let i=0;i<4;i++){const cx=((i*310-cam*.04+T*3)%(W+300)+(W+300))%(W+300)-150;cloud(cx,28+(i*29%50),.7,night?.1:.5);}
+  for(let i=0;i<5;i++){const cx=((i*230-cam*.12+T*8)%(W+320)+(W+320))%(W+320)-160;cloud(cx,40+(i*37%70),1,night?.16:.85);}
+  peaks(.05,238,80,shade(L.hl[0],night?4:24));
   hills(.1,215,34,.006,L.hl[0],0);hills(.22,240,28,.01,L.hl[1],2);hills(.4,262,20,.016,L.hl[2],4);
 }
 function tree(sx,t){
@@ -482,7 +511,7 @@ function drawPlayer(){
   const sx=Math.round(p.x-cam)+4,sy=p.y-3;
   X.fillStyle='rgba(20,20,60,.28)';X.beginPath();X.ellipse(sx,p.gy-3,Math.max(4,12-(p.gy-p.y)*.03),4,0,0,6.3);X.fill();
   if(p.inv>0&&Math.floor(T*16)%2)return;
-  const air=!p.g,run=!air&&Math.abs(p.vx)>20,bob=run?-Math.abs(Math.sin(p.ph))*2:0;
+  const cele=state==='cele'||(state==='res'&&hearts>0&&p.x>FIN),hurt=p.inv>1.2&&state==='play',ct=state==='cele'?celeT:winT+1.7,air=!p.g||cele,run=!air&&Math.abs(p.vx)>20,bob=cele?-Math.abs(Math.sin(ct*6))*Math.max(4,16-ct*3):(run?-Math.abs(Math.sin(p.ph))*2:0);
   X.save();X.translate(sx,sy+bob);
   const sq=p.sq;X.scale(p.f*(1+sq*.4),1-sq*.4);
   const sw=air?.9:Math.sin(p.ph)*.9*(run?1:0),OL='#1a1650',SK='#ffd9b3';
@@ -511,17 +540,20 @@ function drawPlayer(){
   /* head */
   X.fillStyle=SK;X.beginPath();X.arc(1,-40,11,0,6.3);fo();
   X.fillStyle='rgba(255,120,130,.5)';X.beginPath();X.arc(7,-36.5,2.5,0,6.3);X.fill();
-  if((T%3.4)<.12){X.strokeStyle=OL;X.lineWidth=1.7;X.beginPath();X.moveTo(3,-41);X.lineTo(8,-41);X.stroke();}
+  if(cele){X.strokeStyle=OL;X.lineWidth=1.9;X.beginPath();X.arc(5.6,-40,2.8,Math.PI+.3,2*Math.PI-.3);X.stroke();}
+  else if(hurt||(T%3.4)<.12){X.strokeStyle=OL;X.lineWidth=1.7;X.beginPath();X.moveTo(3,-41);X.lineTo(8,-41);X.stroke();}
   else{X.fillStyle='#fff';X.beginPath();X.ellipse(5.6,-41,3.4,4.2,0,0,6.3);X.fill();X.lineWidth=1;X.strokeStyle=OL;X.stroke();
     X.fillStyle=OL;X.beginPath();X.arc(6.6,-41,2.2,0,6.3);X.fill();X.fillStyle='#fff';X.beginPath();X.arc(7.3,-42.3,.9,0,6.3);X.fill();}
-  if(air){X.fillStyle='#8a2a3a';X.beginPath();X.ellipse(7,-34.6,1.8,2.3,0,0,6.3);X.fill();}
+  if(cele){X.fillStyle='#8a2a3a';X.beginPath();X.arc(6.4,-36.5,3,0,Math.PI);X.closePath();X.fill();X.lineWidth=1.2;X.strokeStyle=OL;X.stroke();}
+  else if(hurt){X.strokeStyle=OL;X.lineWidth=1.5;X.beginPath();X.arc(6.4,-33.6,2.3,Math.PI+.3,2*Math.PI-.3);X.stroke();}
+  else if(air){X.fillStyle='#8a2a3a';X.beginPath();X.ellipse(7,-34.6,1.8,2.3,0,0,6.3);X.fill();}
   else{X.strokeStyle=OL;X.lineWidth=1.4;X.beginPath();X.arc(6.4,-36.6,2.3,.2,2.6);X.stroke();}
   /* cap */
   X.fillStyle=vg(-54,-42,'#4b42b8','#241d63');X.beginPath();X.arc(1,-42,11.8,Math.PI,0);X.closePath();fo();
   X.fillStyle='#ff7a3d';rr(5,-44,13,4.4,2.2);fo();
   X.fillStyle='#ffc93c';X.beginPath();X.arc(1,-48.6,3.1,0,6.3);X.fill();X.lineWidth=1.2;X.strokeStyle=OL;X.stroke();
   /* front arm */
-  const hx=air?10:-sw*9+6,hy=air?-35:-17;
+  const hx=cele?9:(air?10:-sw*9+6),hy=cele?-47+Math.sin(T*16)*3.5:(air?-35:-17);
   X.beginPath();X.moveTo(3,-27);X.lineTo(hx,hy);X.lineWidth=8;X.strokeStyle=OL;X.stroke();
   X.lineWidth=4.8;X.strokeStyle='#27c2b1';X.stroke();
   X.fillStyle=SK;X.beginPath();X.arc(hx,hy,3,0,6.3);fo();
@@ -592,8 +624,14 @@ function draw(){
       X.strokeStyle='#8a5a14';X.lineWidth=2;X.strokeRect(sx+3,s.y+3,s.w-6,s.h-6);
       X.beginPath();X.moveTo(sx+3,s.y+3);X.lineTo(sx+s.w-3,s.y+s.h-3);X.moveTo(sx+s.w-3,s.y+3);X.lineTo(sx+3,s.y+s.h-3);X.stroke();}
   }
-  for(const q of parts){X.globalAlpha=Math.max(0,q.l*1.6);X.fillStyle=q.c;X.fillRect(q.x-cx-2,q.y-2,4,4);}
+  for(const q of parts){const al=Math.max(0,q.l*1.6),px=q.x-cx;X.globalAlpha=Math.min(1,al);X.fillStyle=q.c;
+    if(q.k==='star')star(px,q.y,q.r*1.9,q.a+T*4);
+    else if(q.k==='dust'){X.globalAlpha=Math.min(.5,al*.5);X.beginPath();X.arc(px,q.y,q.r*(1+(1-q.l/q.l0)*1.8),0,6.3);X.fill();}
+    else if(q.k==='conf'){X.save();X.translate(px,q.y);X.rotate(q.a+T*8);X.fillRect(-3,-1.5,6,3);X.restore();}
+    else X.fillRect(px-2,q.y-2,4,4);}
   X.globalAlpha=1;
+  if(cur===3){X.fillStyle='rgba(12,10,70,.16)';X.fillRect(-10,-offY-6,W+20,H+offY+20);}
+  else if(cur===2){X.fillStyle='rgba(255,110,60,.07)';X.fillRect(-10,-offY-6,W+20,H+offY+20);}
   X.restore();
   if(state==='menu')return;
   X.textBaseline='middle';
@@ -622,8 +660,9 @@ function frame(t){
   T+=dt;if(shake>0)shake-=dt;if(toast.t>0)toast.t-=dt;
   if(state==='play'){const n=Math.ceil(dt/.0167)||1;for(let i=0;i<n&&state==='play';i++)update(dt/n);}
   else if(state==='menu'){cam+=70*dt;if(cam>LEN-W-10)cam=0;}
-  else if(state==='res'&&hearts>0&&p.x>FIN){winT+=dt;if(winT<2.5&&Math.random()<.5)spawn(cam+Math.random()*W,40,1,['#ffd84a','#ff6a8d','#6fd0ff','#7ee06a'][Math.random()*4|0],40);}
-  for(let i=parts.length-1;i>=0;i--){const q=parts[i];q.l-=dt;q.vy+=380*dt;q.x+=q.vx*dt;q.y+=q.vy*dt;if(q.l<=0)parts.splice(i,1);}
+  else if(state==='cele'){celeT+=dt;if(Math.random()<.3)spawn(cam+Math.random()*W,30,1,['#ffd84a','#ff6a8d','#6fd0ff','#7ee06a'],40,'conf');if(celeT>1.7)showRes(true);}
+  else if(state==='res'&&hearts>0&&p.x>FIN){winT+=dt;if(winT<2.5&&Math.random()<.5)spawn(cam+Math.random()*W,40,1,['#ffd84a','#ff6a8d','#6fd0ff','#7ee06a'],40,'conf');}
+  for(let i=parts.length-1;i>=0;i--){const q=parts[i];q.l-=dt;q.vy+=(q.k==='dust'?25:380)*dt;q.x+=q.vx*dt;q.y+=q.vy*dt;if(q.l<=0)parts.splice(i,1);}
   draw();
 }
 requestAnimationFrame(frame);
