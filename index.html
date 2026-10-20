@@ -673,6 +673,7 @@ function box(x,y,w,h,d,f,t,s){
   X.fillStyle=s;X.beginPath();X.moveTo(x+w,y);X.lineTo(x+w+dx,y-dy);X.lineTo(x+w+dx,y+h-dy);X.lineTo(x+w,y+h);X.fill();
 }
 function shade(h,p){const n=parseInt(h.slice(1),16),f=p<0?0:255,t=Math.abs(p)/100,r=n>>16,g=n>>8&255,b=n&255;return '#'+(0x1000000+(Math.round((f-r)*t)+r<<16)+(Math.round((f-g)*t)+g<<8)+(Math.round((f-b)*t)+b)).toString(16).slice(1);}
+function mix(a,b,t){const x=parseInt(a.slice(1),16),y=parseInt(b.slice(1),16),xr=x>>16,xg=x>>8&255,xb=x&255,yr=y>>16,yg=y>>8&255,yb=y&255;const r=Math.round(xr+(yr-xr)*t),g=Math.round(xg+(yg-xg)*t),bl=Math.round(xb+(yb-xb)*t);return '#'+(0x1000000+(r<<16)+(g<<8)+bl).toString(16).slice(1);}
 function heart(x,y,s,col){X.fillStyle=col;X.beginPath();X.moveTo(x,y+s*.9);X.bezierCurveTo(x-s*1.35,y-s*.1,x-s*.7,y-s*1.15,x,y-s*.4);X.bezierCurveTo(x+s*.7,y-s*1.15,x+s*1.35,y-s*.1,x,y+s*.9);X.fill();}
 function hills(par,base,amp,fr,col,ph){
   const hg=X.createLinearGradient(0,base-amp*1.4,0,H+12);hg.addColorStop(0,col);hg.addColorStop(1,shade(col,-28));
@@ -682,6 +683,12 @@ function hills(par,base,amp,fr,col,ph){
 }
 const STARS=Array.from({length:70},(_,i)=>({x:(i*97%100)/100,y:(i*53%62)/100,r:.6+(i%3)*.5,p:i*1.7}));
 const SUN=[{x:.2,y:112,r:24,c:'#ffe3b0',g:'255,200,140'},{x:.74,y:56,r:22,c:'#fff6c8',g:'255,240,180'},{x:.78,y:128,r:34,c:'#ffb067',g:'255,150,90'},{x:.3,y:74,r:20,c:'#f2fbff',g:'190,235,255'},{x:.7,y:60,r:20,c:'#fff',g:'255,255,255'}];
+function horizon(par,base,h,col){
+  const g=X.createLinearGradient(0,base-h,0,base+30);g.addColorStop(0,col);g.addColorStop(1,shade(col,-8));
+  X.fillStyle=g;X.beginPath();X.moveTo(0,H+12);
+  for(let sx=0;sx<=W+20;sx+=20){const wx=sx+cam*par,m=(1-Math.abs(Math.sin(wx*.0018+.4)))*h*.85+Math.abs(Math.sin(wx*.007+1.1))*h*.2;X.lineTo(sx,base-m);}
+  X.lineTo(W+20,H+12);X.fill();
+}
 function peaks(par,base,h,col){
   const g=X.createLinearGradient(0,base-h,0,H+12);g.addColorStop(0,col);g.addColorStop(1,shade(col,-18));
   X.fillStyle=g;X.beginPath();X.moveTo(0,H+12);
@@ -706,6 +713,7 @@ function drawSky(){
   }
   for(let i=0;i<4;i++){const cx=((i*310-cam*.04+T*3)%(W+300)+(W+300))%(W+300)-150;cloud(cx,28+(i*29%50),.7,night?.1:.5);}
   for(let i=0;i<5;i++){const cx=((i*230-cam*.12+T*8)%(W+320)+(W+320))%(W+320)-160;cloud(cx,40+(i*37%70),1,night?.16:.85);}
+  horizon(.015,200,58,mix(L.sky[1],L.hl[0],night?.22:.4));
   peaks(.05,238,80,shade(L.hl[0],night?4:24));
   hills(.1,215,34,.006,L.hl[0],0);hills(.22,240,28,.01,L.hl[1],2);farTrees();hills(.4,262,20,.016,L.hl[2],4);shafts();
 }
