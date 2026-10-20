@@ -365,7 +365,7 @@ const NIGHT=[0,0,0,1,0,1];
 const mult=c=>c>=4?3:c>=2?2:1;
 function reset(i){
   cur=i;qsel=lru(LV[i].qs).sort((a,b)=>(sv.vocab[b.w]?1:0)-(sv.vocab[a.w]?1:0)).slice(0,CP.length);qsel.forEach(use);save();
-  p={dj2:0,x:60,y:GY,vx:0,vy:0,f:1,g:true,ph:0,inv:0,coy:0,buf:0,safe:60,gy:GY,sq:0,dt:0};
+  p={dj2:0,x:60,y:GY,vx:0,vy:0,f:1,g:true,ph:0,inv:0,coy:0,buf:0,safe:60,gy:GY,sq:0,dt:0,jant:0,happy:0,idle:0};
   combo=0;pw={sh:0,mag:0,dj:0};wrongRun=new Set();prac=false;bossOn=false;bs={x:0,y:-90,vy:0,land:0,hp:3,max:3,ph:'',t:0,flash:0,dx:0,did:0,done:0};musT=0;musStep=0;
   pus=shuffle(['sh','mag','dj','hp','sh','mag']).map((t,k)=>({x:[330,1560,1960,2780,3700,5000][k],y:GY-62,t,got:0}));
   hearts=3;coinN=0;score=0;corr=0;asked=0;seen=new Set();cpDone=[];parts=[];cam=0;winT=0;toast.t=0;
@@ -600,7 +600,9 @@ function update(dt){
   p.vx+=(tgt-p.vx)*Math.min(1,dt*(p.g?14:11));
   if(tgt)p.f=tgt>0?1:-1;
   p.coy=p.g?.1:p.coy-dt;p.buf-=dt;p.inv-=dt;
-  if(p.buf>0&&p.coy>0){p.vy=-440;p.g=false;p.coy=0;p.buf=0;p.sq=-.25;sfx(300,.18,'square',.04,620);}
+  p.happy=Math.max(0,p.happy-dt);if(p.g&&Math.abs(p.vx)<15&&!inp.l&&!inp.r)p.idle+=dt;else p.idle=0;
+  if(p.jant>0){p.jant=Math.max(0,p.jant-dt);p.sq=.22;if(p.jant<=0){p.vy=-440;p.g=false;p.coy=0;p.buf=0;p.sq=-.32;sfx(300,.18,'square',.04,620);}}
+  else if(p.buf>0&&p.coy>0){p.jant=.045;p.sq=.22;}
   else if(p.buf>0&&pw.dj>0&&!p.g&&p.coy<=0&&!p.dj2){p.vy=-420;p.dj2=1;p.buf=0;p.sq=-.2;spawn(p.x,p.y,8,['#ffffff','#8fe3ff'],60,'dust');sfx(420,.16,'triangle',.05,860);}
   pw.mag=Math.max(0,pw.mag-dt);pw.dj=Math.max(0,pw.dj-dt);
   if(!inp.j&&p.vy<-170)p.vy=-170;
@@ -636,8 +638,8 @@ function update(dt){
     if(u.t==='sh'){pw.sh=1;toast.s=tx('shGot');}else if(u.t==='mag'){pw.mag=10;toast.s=tx('magGot');}else if(u.t==='dj'){pw.dj=12;toast.s=tx('djGot');}
     else if(hearts<3){hearts++;toast.s=tx('hpGot');}else{score+=50;toast.s=tx('hpFull');}}
   if(pw.mag>0)for(const c of coinL){if(c.got)continue;const dx=p.x-c.x,dy=p.y-18-c.y,d=Math.hypot(dx,dy);if(d<140&&d>1){c.x+=dx/d*320*dt;c.y+=dy/d*320*dt;}}
-  for(const c of coinL)if(!c.got&&Math.abs(c.x-p.x)<18&&Math.abs(c.y-(p.y-18))<24){c.got=1;coinN++;score+=10;spawn(c.x,c.y,6,['#ffd84a','#fff3a8'],85,'star');{coinStreak=T-coinLast<.7?Math.min(coinStreak+1,8):0;coinLast=T;const cf=880*Math.pow(1.0595,coinStreak*2);sfx(cf,.12,'square',.04,cf*1.5);}}
-  for(const w of wtok)if(!w.got&&Math.abs(w.x-p.x)<26&&Math.abs(w.y-(p.y-18))<26){w.got=1;seen.add(w.w);score+=50;toast.t=1.6;toast.s=tx('newword')+' '+w.w;say(w.w);spawn(w.x,w.y,8,['#8fe3ff','#ffffff'],95,'star');sfx(740,.1,'triangle',.05,1100);}
+  for(const c of coinL)if(!c.got&&Math.abs(c.x-p.x)<18&&Math.abs(c.y-(p.y-18))<24){c.got=1;coinN++;score+=10;p.happy=.4;spawn(c.x,c.y,6,['#ffd84a','#fff3a8'],85,'star');{coinStreak=T-coinLast<.7?Math.min(coinStreak+1,8):0;coinLast=T;const cf=880*Math.pow(1.0595,coinStreak*2);sfx(cf,.12,'square',.04,cf*1.5);}}
+  for(const w of wtok)if(!w.got&&Math.abs(w.x-p.x)<26&&Math.abs(w.y-(p.y-18))<26){w.got=1;seen.add(w.w);score+=50;p.happy=.5;toast.t=1.6;toast.s=tx('newword')+' '+w.w;say(w.w);spawn(w.x,w.y,8,['#8fe3ff','#ffffff'],95,'star');sfx(740,.1,'triangle',.05,1100);}
   for(const [x,w] of spikeL)if(p.y>GY-14&&p.x+8>x&&p.x-8<x+w)hurt(-p.f);
   for(const s of slimes){
     if(!s.alive)continue;
@@ -901,9 +903,9 @@ function drawPlayer(){
   const sx=Math.round(p.x-cam)+4,sy=p.y-3;
   X.fillStyle='rgba(20,20,60,.28)';X.beginPath();X.ellipse(sx,p.gy-3,Math.max(4,12-(p.gy-p.y)*.03),4,0,0,6.3);X.fill();
   if(p.inv>0&&Math.floor(T*16)%2)return;
-  const cele=state==='cele'||(state==='res'&&hearts>0&&p.x>FIN),hurt=p.inv>1.2&&state==='play',ct=state==='cele'?celeT:winT+1.7,air=!p.g||cele,run=!air&&Math.abs(p.vx)>20,bob=cele?-Math.abs(Math.sin(ct*6))*Math.max(4,16-ct*3):(run?-Math.abs(Math.sin(p.ph))*2:0);
+  const cele=state==='cele'||(state==='res'&&hearts>0&&p.x>FIN),hurt=p.inv>1.2&&state==='play',ct=state==='cele'?celeT:winT+1.7,air=!p.g||cele,run=!air&&Math.abs(p.vx)>20,breathe=(!air&&!run&&p.idle>.5)?Math.sin((p.idle-.5)*2.2)*1.3:0,bob=cele?-Math.abs(Math.sin(ct*6))*Math.max(4,16-ct*3):(run?-Math.abs(Math.sin(p.ph))*2:breathe);
   X.save();X.translate(sx,sy+bob);
-  const sq=p.sq;X.scale(p.f*(1+sq*.4),1-sq*.4);
+  const airSq=(!p.g&&!cele)?Math.max(-.15,Math.min(.12,p.vy/3000)):0,sq=p.sq+airSq;X.scale(p.f*(1+sq*.4),1-sq*.4);
   const sw=air?.9:Math.sin(p.ph)*.9*(run?1:0),OL='#1a1650',SK='#ffd9b3';
   X.lineCap='round';X.lineJoin='round';
   const fo=()=>{X.fill();X.lineWidth=1.8;X.strokeStyle=OL;X.stroke();};
@@ -936,6 +938,7 @@ function drawPlayer(){
     X.fillStyle=OL;X.beginPath();X.arc(6.6,-41,2.2,0,6.3);X.fill();X.fillStyle='#fff';X.beginPath();X.arc(7.3,-42.3,.9,0,6.3);X.fill();}
   if(cele){X.fillStyle='#8a2a3a';X.beginPath();X.arc(6.4,-36.5,3,0,Math.PI);X.closePath();X.fill();X.lineWidth=1.2;X.strokeStyle=OL;X.stroke();}
   else if(hurt){X.strokeStyle=OL;X.lineWidth=1.5;X.beginPath();X.arc(6.4,-33.6,2.3,Math.PI+.3,2*Math.PI-.3);X.stroke();}
+  else if(p.happy>0){X.fillStyle='#8a2a3a';X.beginPath();X.arc(6.2,-35.8,2.7,0,Math.PI);X.closePath();X.fill();X.lineWidth=1.1;X.strokeStyle=OL;X.stroke();}
   else if(air){X.fillStyle='#8a2a3a';X.beginPath();X.ellipse(7,-34.6,1.8,2.3,0,0,6.3);X.fill();}
   else{X.strokeStyle=OL;X.lineWidth=1.4;X.beginPath();X.arc(6.4,-36.6,2.3,.2,2.6);X.stroke();}
   /* cap */
