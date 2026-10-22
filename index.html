@@ -674,6 +674,11 @@ function box(x,y,w,h,d,f,t,s){
 }
 function shade(h,p){const n=parseInt(h.slice(1),16),f=p<0?0:255,t=Math.abs(p)/100,r=n>>16,g=n>>8&255,b=n&255;return '#'+(0x1000000+(Math.round((f-r)*t)+r<<16)+(Math.round((f-g)*t)+g<<8)+(Math.round((f-b)*t)+b)).toString(16).slice(1);}
 function mix(a,b,t){const x=parseInt(a.slice(1),16),y=parseInt(b.slice(1),16),xr=x>>16,xg=x>>8&255,xb=x&255,yr=y>>16,yg=y>>8&255,yb=y&255;const r=Math.round(xr+(yr-xr)*t),g=Math.round(xg+(yg-xg)*t),bl=Math.round(xb+(yb-xb)*t);return '#'+(0x1000000+(r<<16)+(g<<8)+bl).toString(16).slice(1);}
+function groundShadow(sx,footY,dist,maxDist,bw,bh,alpha){
+  const t=Math.max(0,Math.min(1,dist/maxDist)),w=Math.max(1,bw*(1-t*.62)),h=Math.max(.6,bh*(1-t*.68)),a=alpha*(1-t*.82);
+  if(a<=.015)return;
+  X.fillStyle='rgba(15,14,46,'+a.toFixed(3)+')';X.beginPath();X.ellipse(sx,footY,w,h,0,0,6.3);X.fill();
+}
 function heart(x,y,s,col){X.fillStyle=col;X.beginPath();X.moveTo(x,y+s*.9);X.bezierCurveTo(x-s*1.35,y-s*.1,x-s*.7,y-s*1.15,x,y-s*.4);X.bezierCurveTo(x+s*.7,y-s*1.15,x+s*1.35,y-s*.1,x,y+s*.9);X.fill();}
 function hills(par,base,amp,fr,col,ph){
   const hg=X.createLinearGradient(0,base-amp*1.4,0,H+12);hg.addColorStop(0,col);hg.addColorStop(1,shade(col,-28));
@@ -695,6 +700,15 @@ function peaks(par,base,h,col){
   for(let sx=0;sx<=W+16;sx+=16){const wx=sx+cam*par,m=(1-Math.abs(Math.sin(wx*.0035+.7)))*h*.9+Math.abs(Math.sin(wx*.013))*h*.18;X.lineTo(sx,base-m);}
   X.lineTo(W+16,H+12);X.fill();
 }
+function water(par,base,col1,col2){
+  const g=X.createLinearGradient(0,base-6,0,base+16);g.addColorStop(0,col1);g.addColorStop(1,col2);
+  X.fillStyle=g;X.beginPath();X.moveTo(0,base+16);
+  for(let sx=0;sx<=W+16;sx+=16){const wx=sx+cam*par;X.lineTo(sx,base+Math.sin(wx*.02+T*.7)*1.6+Math.sin(wx*.05+T*1.3)*.8);}
+  X.lineTo(W+16,base+16);X.closePath();X.fill();
+  X.fillStyle='rgba(255,255,255,.55)';
+  for(let i=0;i<9;i++){const wx=i*97,sx=((wx-cam*par+T*26)%(W+60)+(W+60))%(W+60)-30,sy=base+2+((i*41)%8),a=.35+.35*Math.sin(T*3+i*1.7);X.globalAlpha=Math.max(0,a);X.fillRect(sx,sy,2.6+(i%3),1.1);}
+  X.globalAlpha=1;
+}
 function cloud(cx,cy,sc,a){X.fillStyle='rgba(255,255,255,'+a+')';X.beginPath();X.ellipse(cx,cy,34*sc,11*sc,0,0,6.3);X.ellipse(cx+20*sc,cy-8*sc,22*sc,10*sc,0,0,6.3);X.ellipse(cx-20*sc,cy-4*sc,20*sc,8*sc,0,0,6.3);X.fill();}
 function drawSky(){
   const L=LV[cur],night=!!NIGHT[cur],g=X.createLinearGradient(0,-offY,0,GY);
@@ -715,7 +729,9 @@ function drawSky(){
   for(let i=0;i<5;i++){const cx=((i*230-cam*.12+T*8)%(W+320)+(W+320))%(W+320)-160;cloud(cx,40+(i*37%70),1,night?.16:.85);}
   horizon(.015,200,58,mix(L.sky[1],L.hl[0],night?.22:.4));
   peaks(.05,238,80,shade(L.hl[0],night?4:24));
-  hills(.1,215,34,.006,L.hl[0],0);hills(.22,240,28,.01,L.hl[1],2);farTrees();hills(.4,262,20,.016,L.hl[2],4);shafts();
+  hills(.1,215,34,.006,L.hl[0],0);hills(.22,240,28,.01,L.hl[1],2);
+  water(.3,247,mix(L.sky[1],'#3fc2e0',.5),mix(L.sky[2],'#0e6f96',.55));
+  farTrees();hills(.4,262,20,.016,L.hl[2],4);shafts();
 }
 /* ---------- art: pre-rendered scenery (fast on phones) ---------- */
 let hq=true,art=null,artLv=-1,ASC=1,gfxFa=0,gfxFn=0,rs=1;
@@ -727,7 +743,7 @@ const PALS=[
  {leaf:['#6fb7d6','#a5dff0','#e8f9ff'],bl:['#bfe9ff','#f0fbff'],trunk:'#6b5a7e',grass:['#5fb6a6','#8fe0c8','#d6fff0'],dirt:['#8e8aa8','#5c5a7e']},
  {leaf:['#1d5c6b','#2a8f86','#58d6b0'],bl:['#7fe0d0','#b5f5e8'],trunk:'#2b2550',grass:['#16705f','#25a07a','#5fe3a5'],dirt:['#3a4a6a','#232e55']}
 ];
-const DECO=[['dande','plant'],['dande','plant'],['dande','plant'],['mush','rune'],['crystal','rock'],['rune','lantern']];
+const DECO=[['dande','plant'],['plant','rock'],['dande','lantern'],['mush','crystal'],['rock','rune'],['rune','lantern']];
 const rnd=()=>{rs=(rs*1664525+1013904223)>>>0;return rs/4294967296;};
 function mk(w,h,ox,oy){const c=document.createElement('canvas');c.width=Math.ceil(w*ASC);c.height=Math.ceil(h*ASC);const g=c.getContext('2d');g.scale(ASC,ASC);return{c,g,w,h,ox:ox||0,oy:oy||0};}
 function leaf(g,x,y,len,wd,ang,c1,c2){g.save();g.translate(x,y);g.rotate(ang);const gr=g.createLinearGradient(0,0,len,0);gr.addColorStop(0,c1);gr.addColorStop(1,c2);g.fillStyle=gr;g.beginPath();g.moveTo(0,0);g.quadraticCurveTo(len*.5,-wd,len,0);g.quadraticCurveTo(len*.5,wd,0,0);g.fill();g.strokeStyle='rgba(255,255,255,.22)';g.lineWidth=1;g.beginPath();g.moveTo(len*.08,0);g.lineTo(len*.9,0);g.stroke();g.restore();}
@@ -889,8 +905,8 @@ function drawBird(sx,y,d,fl){
 function drawBoss(sx,sy){
   const dead=bs.ph==='dead',sc=dead?Math.max(.01,1-bs.t/1.6):1,fl=bs.flash>0,at=bs.ph==='atk',q=fl?Math.sin(bs.flash*40)*.08:0;
   const col=['#8e5bd6','#e0673e','#2f9e8f','#5a6bd6','#d65b9a','#4aa3df'][cur]||'#8e5bd6',bob=bs.ph==='in'?0:Math.sin(T*3)*2;
+  if(!dead)groundShadow(sx,GY-4,Math.max(0,GY-sy),300,52,11,.4);
   X.save();X.translate(sx,sy+bob);X.scale(sc*(1+q),sc*(1-q));if(dead)X.rotate(Math.sin(bs.t*30)*.08);
-  X.fillStyle='rgba(0,0,0,.2)';X.beginPath();X.ellipse(0,1,50,8,0,0,6.3);X.fill();
   X.fillStyle=shade(col,-25);X.beginPath();X.ellipse(-24,-4,17,8,0,0,6.3);X.ellipse(24,-4,17,8,0,0,6.3);X.fill();
   const g=X.createRadialGradient(-12,-70,6,0,-46,56);g.addColorStop(0,shade(col,30));g.addColorStop(1,shade(col,-18));
   X.fillStyle=fl?'#fff':g;X.beginPath();X.ellipse(0,-44,50,44,0,0,6.3);X.fill();
@@ -909,7 +925,7 @@ function drawBoss(sx,sy){
 }
 function drawPlayer(){
   const sx=Math.round(p.x-cam)+4,sy=p.y-3;
-  X.fillStyle='rgba(20,20,60,.28)';X.beginPath();X.ellipse(sx,p.gy-3,Math.max(4,12-(p.gy-p.y)*.03),4,0,0,6.3);X.fill();
+  groundShadow(sx,p.gy-3,Math.max(0,p.gy-p.y),150,13,4.6,.32);
   if(p.inv>0&&Math.floor(T*16)%2)return;
   const cele=state==='cele'||(state==='res'&&hearts>0&&p.x>FIN),hurt=p.inv>1.2&&state==='play',ct=state==='cele'?celeT:winT+1.7,air=!p.g||cele,run=!air&&Math.abs(p.vx)>20,breathe=(!air&&!run&&p.idle>.5)?Math.sin((p.idle-.5)*2.2)*1.3:0,bob=cele?-Math.abs(Math.sin(ct*6))*Math.max(4,16-ct*3):(run?-Math.abs(Math.sin(p.ph))*2:breathe);
   const glance=(!air&&!run&&p.idle>.9)?Math.max(-1.6,Math.min(1.6,(Math.sin(p.idle*.85)+Math.sin(p.idle*.33+1.7))*1.1)):0;
@@ -1021,7 +1037,7 @@ function draw(){
     X.fillStyle='#a6f093';X.beginPath();X.ellipse(sx-5,GY-14,4,2.5,0,0,6.3);X.fill();
     X.fillStyle='#173';X.fillRect(sx-7+s.d*2,GY-11,3,5);X.fillRect(sx+3+s.d*2,GY-11,3,5);
   }
-  for(const b of birds){if(!b.alive||b.x<L||b.x>R)continue;drawBird(b.x-cx,b.y,b.d,T+b.ph);}
+  for(const b of birds){if(!b.alive||b.x<L||b.x>R)continue;groundShadow(b.x-cx,GY-3,Math.max(0,GY-b.y),150,10,3.2,.22);drawBird(b.x-cx,b.y,b.d,T+b.ph);}
   if(bossOn&&!bs.done)drawBoss(bs.x+bs.dx-cx,bs.y);
   drawPlayer();
   if(pw.sh){const bx=p.x-cx,by=p.y-18,r=27+Math.sin(T*5)*1.5;X.fillStyle='rgba(143,227,255,.2)';X.beginPath();X.arc(bx,by,r,0,6.3);X.fill();X.strokeStyle='rgba(190,240,255,.9)';X.lineWidth=2;X.stroke();}
