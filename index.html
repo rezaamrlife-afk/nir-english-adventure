@@ -78,6 +78,11 @@ p{margin:0;line-height:1.4;font-size:clamp(14px,3.4vh,17px);font-weight:400}
 .stars span{display:inline-block;color:#ffb81c;text-shadow:0 3px 0 #c77c0a;opacity:0;animation:pop .5s cubic-bezier(.2,1.6,.4,1) forwards}
 .stars span.off{color:#d6d3ee;text-shadow:none}
 @keyframes pop{from{transform:scale(.2) rotate(-35deg);opacity:0}to{transform:none;opacity:1}}
+#cd{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(10,6,30,.55);backdrop-filter:blur(2px);z-index:8;pointer-events:none}
+#cdBanner{background:rgba(20,15,50,.7);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:8px 20px;color:#fff;font:700 15px Fredoka,Vazirmatn,sans-serif;margin-bottom:14px;letter-spacing:.3px}
+#cdNum{font:800 110px Fredoka,Vazirmatn,sans-serif;color:#ffc93c;text-shadow:0 8px 0 rgba(0,0,0,.25),0 0 40px rgba(255,201,60,.5)}
+#cdNum.popn{animation:cdpop .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes cdpop{0%{transform:scale(.3);opacity:0}60%{transform:scale(1.18);opacity:1}100%{transform:scale(1)}}
 .lvb .stl{color:#e89a00;letter-spacing:1px;font-size:14px}.lvb:disabled .stl{color:#fff}
 @media (prefers-reduced-motion:reduce){.stars span{animation:none;opacity:1}}
 .lvb{font-size:12px}.lvb b{font-size:15px}
@@ -118,6 +123,8 @@ p{margin:0;line-height:1.4;font-size:clamp(14px,3.4vh,17px);font-weight:400}
  <div id="rutx" style="background:rgba(255,201,60,.14);border:1px solid rgba(255,201,60,.4);border-radius:14px;padding:14px;margin:10px 0;text-align:start;font-size:14.5px;line-height:1.7"></div>
  <div class="row"><button class="pb" id="rugo" data-i="startBtn">Start level</button><button class="pb sec" id="ruback" data-i="menu">Menu</button></div>
 </div></div>
+
+<div id="cd"><div id="cdBanner"></div><div id="cdNum"></div></div>
 
 <script>
 (()=>{
@@ -440,7 +447,13 @@ function openRuleCard(i){ruleIdx=i;const l=LV[i];
   $('rutx').innerHTML='<b>'+tx('ruleT')+':</b><br>'+rt;
   show('rule');
 }
-$('rugo').onclick=()=>start(ruleIdx);$('ruback').onclick=menu;
+let cdT=0,cdTimer=null;
+function cdShow(txt){const e=$('cdNum');e.textContent=txt;e.classList.remove('popn');void e.offsetWidth;e.classList.add('popn');}
+function cdTick(){cdT--;if(cdT>0){cdShow(cdT);sfx(440,.12,'square',.07,660);}else if(cdT===0){cdShow('GO!');sfx(880,.18,'square',.08,1320);}else{clearInterval(cdTimer);cdTimer=null;$('cd').style.display='none';start(ruleIdx);}}
+function showIntro(i){const l=LV[i];$('cdBanner').textContent=tx('level')+' '+(i+1)+' · '+ln(l);}
+function runCountdown(i){ruleIdx=i;showIntro(i);$('cd').style.display='flex';cdT=3;cdShow(cdT);sfx(440,.12,'square',.07,660);
+  if(cdTimer)clearInterval(cdTimer);cdTimer=setInterval(cdTick,750);}
+$('rugo').onclick=()=>runCountdown(ruleIdx);$('ruback').onclick=menu;
 const SCT={};
 function show(id){SC.forEach(s=>{const e=$(s);clearTimeout(SCT[s]);
   if(s===id){e.classList.remove('out');e.classList.add('on');}
