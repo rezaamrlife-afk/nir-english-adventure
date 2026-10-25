@@ -112,6 +112,13 @@ p{margin:0;line-height:1.4;font-size:clamp(14px,3.4vh,17px);font-weight:400}
 
 <div class="scr" id="vb"><div class="card" id="vc"><h2 data-i="wordsT">My Words</h2><p id="vn"></p><div id="vl"></div><div class="row"><button class="pb" id="vprac" data-i="practice">Practice</button><button class="pb sec" id="vback" data-i="back">Back</button></div></div></div>
 
+<div class="scr" id="rule"><div class="card" id="ruc">
+ <div class="logo"><img class="lgi" style="height:36px" src="https://niracademy.com/wp-content/uploads/2026/05/Logo-1.jpeg" alt="NIR Academy" onload="this.nextElementSibling.style.display='none'" onerror="this.remove()"><svg width="28" height="28" viewBox="0 0 34 34"><rect width="34" height="34" rx="9" fill="#ffc93c"/><path d="M9 25V9l16 16V9" fill="none" stroke="#2a2466" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/></svg>NIR Academy</div>
+ <h2 id="ruh"></h2><div class="st" id="rucefr"></div>
+ <div id="rutx" style="background:rgba(255,201,60,.14);border:1px solid rgba(255,201,60,.4);border-radius:14px;padding:14px;margin:10px 0;text-align:start;font-size:14.5px;line-height:1.7"></div>
+ <div class="row"><button class="pb" id="rugo" data-i="startBtn">Start level</button><button class="pb sec" id="ruback" data-i="menu">Menu</button></div>
+</div></div>
+
 <script>
 (()=>{
 "use strict";
@@ -159,7 +166,7 @@ function musTick(){
   const now=AC.currentTime,night=NIGHT[cur],bpm=[112,120,126,92,118,100][cur]||112,sd=60/bpm/2,vol=state==='qz'?.35:1;
   if(!musT||musT<now-.2)musT=now+.05;
   while(musT<now+.45){
-    const bar=(musStep>>3)&3,st=musStep&7,root=[0,-3,-7,-5][bar]+[0,2,-1,-5,3,-3][cur],ch=night?[0,3,7,12]:[0,4,7,12];
+    const bar=(musStep>>3)&3,st=musStep&7,root=[0,-3,-7,-5][bar]+([0,2,-1,-5,3,-3,1,-2][cur]||0),ch=night?[0,3,7,12]:[0,4,7,12];
     const hz=n=>262*Math.pow(2,n/12);
     const lead=[0,1,2,3,2,1,2,1][st],bo=st===0||st===4;
     try{
@@ -186,9 +193,9 @@ fa:{sub:'بازی کن. یاد بگیر. کشف کن.',desc:'بدو، بپر، �
 Object.assign(STR.en,{wordsT:'My Words',vempty:'No words yet. Words you miss will show up here for practice!',vhint:'Words to practice. They come back in your next games. Answer a word right twice and it is learned!',back:'Back',review:'Review words',okp:'Correct! +{p} points.',cmb:'Combo x{m}!',shBreak:'Shield saved you!',shGot:'Shield on!',magGot:'Coin magnet!',djGot:'Double jump!',hpGot:'+1 heart!',hpFull:'+50 points!',cmbShield:'3 in a row! Shield earned.'});
 Object.assign(STR.tr,{wordsT:'Kelimelerim',vempty:'Henüz kelime yok. Yanlış yaptığın kelimeler pratik için burada görünür!',vhint:'Pratik yapılacak kelimeler. Sonraki oyunlarında tekrar gelir. Bir kelimeyi iki kez doğru bil, öğrenilmiş olsun!',back:'Geri',review:'Kelimeleri gözden geçir',okp:'Doğru! +{p} puan.',cmb:'Kombo x{m}!',shBreak:'Kalkan seni kurtardı!',shGot:'Kalkan açık!',magGot:'Altın mıknatısı!',djGot:'Çift zıplama!',hpGot:'+1 can!',hpFull:'+50 puan!',cmbShield:'Üst üste 3 doğru! Kalkan kazandın.'});
 Object.assign(STR.fa,{wordsT:'لغت‌های من',vempty:'هنوز لغتی نیست. لغت‌هایی که اشتباه می‌زنی برای تمرین اینجا می‌آیند!',vhint:'لغت‌های تمرینی. در بازی‌های بعدی دوباره می‌آیند. هر لغت را دو بار درست جواب بدهی یاد گرفته‌ای!',back:'برگشت',review:'مرور لغت‌ها',okp:'درست! +{p} امتیاز.',cmb:'کمبو x{m}!',shBreak:'سپر نجاتت داد!',shGot:'سپر فعال شد!',magGot:'آهنربای سکه!',djGot:'پرش دوبل!',hpGot:'+۱ قلب!',hpFull:'+۵۰ امتیاز!',cmbShield:'سه جواب درست پشت‌سرهم! سپر گرفتی.'});
-Object.assign(STR.en,{practice:'Practice',musOn:'Music: On',musOff:'Music: Off',okq:'Correct!',boss:'BOSS',bossIn:'Boss battle! Right answer = hit. Wrong answer = it hits you.',bossH:'Boss battle · Boss HP {h}',bossHit:'Direct hit! +150',bossDown:'Boss defeated! +300'});
-Object.assign(STR.tr,{practice:'Pratik yap',musOn:'Müzik: Açık',musOff:'Müzik: Kapalı',okq:'Doğru!',boss:'PATRON',bossIn:'Patron savaşı! Doğru cevap = vuruş. Yanlış cevap = o sana vurur.',bossH:'Patron savaşı · Patron canı {h}',bossHit:'Tam isabet! +150',bossDown:'Patron yenildi! +300'});
-Object.assign(STR.fa,{practice:'تمرین',musOn:'موسیقی: روشن',musOff:'موسیقی: خاموش',okq:'درست!',boss:'باس',bossIn:'نبرد با باس! جواب درست = ضربه به او. جواب غلط = او به تو ضربه می‌زند.',bossH:'نبرد با باس · جان باس {h}',bossHit:'ضربه‌ی کامل! +۱۵۰',bossDown:'باس شکست خورد! +۳۰۰'});
+Object.assign(STR.en,{practice:'Practice',musOn:'Music: On',musOff:'Music: Off',okq:'Correct!',boss:'BOSS',bossIn:'Boss battle! Right answer = hit. Wrong answer = it hits you.',bossH:'Boss battle · Boss HP {h}',bossHit:'Direct hit! +150',bossDown:'Boss defeated! +300',ruleT:"You'll learn",startBtn:'Start level'});
+Object.assign(STR.tr,{practice:'Pratik yap',musOn:'Müzik: Açık',musOff:'Müzik: Kapalı',okq:'Doğru!',boss:'PATRON',bossIn:'Patron savaşı! Doğru cevap = vuruş. Yanlış cevap = o sana vurur.',bossH:'Patron savaşı · Patron canı {h}',bossHit:'Tam isabet! +150',bossDown:'Patron yenildi! +300',ruleT:'Öğrenecekleriniz',startBtn:'Seviyeyi başlat'});
+Object.assign(STR.fa,{practice:'تمرین',musOn:'موسیقی: روشن',musOff:'موسیقی: خاموش',okq:'درست!',boss:'باس',bossIn:'نبرد با باس! جواب درست = ضربه به او. جواب غلط = او به تو ضربه می‌زند.',bossH:'نبرد با باس · جان باس {h}',bossHit:'ضربه‌ی کامل! +۱۵۰',bossDown:'باس شکست خورد! +۳۰۰',ruleT:'چیزی که یاد می‌گیری',startBtn:'شروع مرحله'});
 Object.assign(STR.en,{gfx:'Graphics',gA:'Auto',gH:'High',gL:'Low'});
 Object.assign(STR.tr,{gfx:'Grafik',gA:'Otomatik',gH:'Yüksek',gL:'Düşük'});
 Object.assign(STR.fa,{gfx:'گرافیک',gA:'خودکار',gH:'بالا',gL:'پایین'});
@@ -215,6 +222,7 @@ const WHAT=['این چیست؟','Bu nedir?'],COL=['این چه رنگی است؟
 /* Each level has a pool of questions. A random 5 are picked every time the level starts. */
 const LV=[
  {n:'Everyday words',nn:{tr:'Günlük kelimeler',fa:'لغت‌های روزمره'},cefr:'A1',sky:['#7aa9ff','#ffd0b0','#fff0d0'],hl:['#c3b6e8','#93cbc4','#62bd8c'],
+  rule:{en:'Learn everyday nouns (house, book, school...) and simple sentences like "This is my book."',fa:'یادگیری اسم‌های روزمره (house, book, school...) و جمله‌های ساده مثل "This is my book."',tr:'Günlük isimleri (house, book, school...) ve "This is my book." gibi basit cümleleri öğren.'},
   words:['house','book','school','day','pen','family'],qs:[
   Q('pic','What is this?','house','tree','cup','A house is a place where people live.','house',TT(WHAT[0],'house یعنی خانه. خانه جایی است که مردم در آن زندگی می‌کنند.',WHAT[1],'House “ev” demektir. Ev, insanların yaşadığı yerdir.')),
   Q('pic','What is this?','book','cup','fish','You read a book.','book',TT(WHAT[0],'book یعنی کتاب. کتاب می‌خوانید.',WHAT[1],'Book “kitap” demektir. Kitap okursun.')),
@@ -237,6 +245,7 @@ const LV=[
   B('Put the words in order.',['This','is','my','book'],'"This is" comes first, then "my book".','book',TT(BQ[0],'This is my book یعنی این کتاب من است.',BQ[1],'This is my book “Bu benim kitabım” demektir.')),
   B('Put the words in order.',['I','like','my','school'],'First "I like", then "my school".','school',TT(BQ[0],'I like my school یعنی من مدرسه‌ام را دوست دارم.',BQ[1],'I like my school “Okulumu seviyorum” demektir.'))]},
  {n:'Food, animals, colors',nn:{tr:'Yiyecekler, hayvanlar, renkler',fa:'غذا، حیوانات، رنگ‌ها'},cefr:'A1',sky:['#2f7bff','#8fd3ff','#dff3ff'],hl:['#9fb4ee','#6fc3c9','#43a98a'],
+  rule:{en:'Describe things with "is" + a colour or kind: "The dog is brown." Learn food, animal and colour words.',fa:'توصیف چیزها با "is" + رنگ یا نوع: "The dog is brown." یادگیری لغت‌های غذا، حیوان و رنگ.',tr:'Bir şeyi "is" + renk veya tür ile anlat: "The dog is brown." Yiyecek, hayvan ve renk kelimelerini öğren.'},
   words:['apple','fish','blue','dog','banana','bread'],qs:[
   Q('pic','What is this?','apple','house','book','An apple is a fruit.','apple',TT(WHAT[0],'apple یعنی سیب. سیب یک میوه است.',WHAT[1],'Apple “elma” demektir. Elma bir meyvedir.')),
   Q('pic','What is this?','fish','tree','cup','A fish lives in water.','fish',TT(WHAT[0],'fish یعنی ماهی. ماهی در آب زندگی می‌کند.',WHAT[1],'Fish “balık” demektir. Balık suda yaşar.')),
@@ -259,6 +268,7 @@ const LV=[
   Q('fill','I drink hot ___ in the morning.','tea','shoe','chair','Tea is a hot drink.',null,TT('صبح‌ها ___ داغ می‌نوشم.','tea یعنی چای.','Sabahları sıcak ___ içerim.','Tea “çay” demektir.')),
   B('Put the words in order.',['The','dog','is','brown'],'First the subject, then "is", then the colour.','brown',TT(BQ[0],'The dog is brown یعنی سگ قهوه‌ای است.',BQ[1],'The dog is brown “Köpek kahverengi” demektir.'))]},
  {n:'Actions and sentences',nn:{tr:'Eylemler ve cümleler',fa:'فعل‌ها و جمله‌ها'},cefr:'A1+',sky:['#4a3fb0','#ff7a8a','#ffc78a'],hl:['#8a5fb0','#c96a8f','#5f8f5f'],
+  rule:{en:'Present Simple: with he/she/it the verb takes -s (she reads). Build full sentences with action words.',fa:'حال ساده: با he/she/it فعل s می‌گیرد (she reads). جمله‌های کامل با فعل‌های حرکتی بساز.',tr:'Geniş zaman: he/she/it ile fiil -s alır (she reads). Eylem kelimeleriyle tam cümleler kur.'},
   words:['fly','drink','read','small','run','sleep'],qs:[
   Q('fill','Birds can ___ in the sky.','fly','swim','cook','Birds have wings, so they can fly.',null,TT('پرنده‌ها می‌توانند در آسمان ___ کنند.','fly یعنی پرواز کردن. پرنده‌ها بال دارند.','Kuşlar gökyüzünde ___ bilir.','Fly “uçmak” demektir. Kuşların kanatları vardır.')),
   Q('fill','We ___ water when we are thirsty.','drink','eat','read','We drink water.',null,TT('وقتی تشنه‌ایم آب ___.','drink یعنی نوشیدن.','Susayınca su ___.','Drink “içmek” demektir.')),
@@ -281,6 +291,7 @@ const LV=[
   B('Put the words in order.',['They','play','football','after','school'],'Subject, verb, then what and when.','play',TT(BQ[0],'They play football after school یعنی آن‌ها بعد از مدرسه فوتبال بازی می‌کنند.',BQ[1],'They play football after school “Onlar okuldan sonra futbol oynar” demektir.')),
   B('Put the words in order.',['I','can','swim','very','well'],'First "I", then "can", then the action word.','swim',TT(BQ[0],'I can swim very well یعنی من خیلی خوب شنا می‌کنم.',BQ[1],'I can swim very well “Çok iyi yüzebilirim” demektir.'))]},
  {n:'Basic grammar',nn:{tr:'Temel dil bilgisi',fa:'گرامر پایه'},cefr:'A2',sky:['#0b0a38','#1b1a66','#3b2f8c'],hl:['#2e2c80','#2b5a92','#1f6b6b'],
+  rule:{en:'The verb "to be" (is/am/are) and negatives with "does not": "She does not like tea."',fa:'فعل to be (is/am/are) و منفی‌سازی با does not: "She does not like tea."',tr:'"to be" fiili (is/am/are) ve "does not" ile olumsuz cümle: "She does not like tea."'},
   words:['is','am','are','goes','friends','bus'],qs:[
   Q('fill','She ___ happy.','is','are','am','Use "is" with she, he, and it.',null,TT('او خوشحال است.','با she، he و it از is استفاده می‌کنیم.','O mutlu.','She, he ve it ile “is” kullanılır.')),
   Q('fill','I ___ a student.','am','is','are','Use "am" with I.',null,TT('من یک دانش‌آموز هستم.','با I از am استفاده می‌کنیم.','Ben bir öğrenciyim.','I ile “am” kullanılır.')),
@@ -303,6 +314,7 @@ const LV=[
   B('Put the words in order.',['There','is','a','cat','under','the','table'],'"There is" + one thing + the place.','is',TT(BQ[0],'There is a cat under the table یعنی زیر میز یک گربه هست.',BQ[1],'There is a cat under the table “Masanın altında bir kedi var” demektir.')),
   B('Put the words in order.',['She','does','not','like','tea'],'Negative: does not + base verb.','does',TT(BQ[0],'She does not like tea یعنی او چای دوست ندارد.',BQ[1],'She does not like tea “O çayı sevmez” demektir.'))]},
  {n:'Travel and places',nn:{tr:'Seyahat ve yerler',fa:'سفر و مکان‌ها'},cefr:'A2',sky:['#6fb7e8','#bfe6f7','#eefaff'],hl:['#9fd0f0','#bfe3f5','#e4f4fc'],
+  rule:{en:'Talk about places and schedules: "We are at the airport." / "The train leaves at nine."',fa:'صحبت درباره‌ی مکان‌ها و برنامه‌ها: "We are at the airport." / "The train leaves at nine."',tr:'Yerler ve programlar hakkında konuş: "We are at the airport." / "The train leaves at nine."'},
   words:['airport','ticket','hotel','map','train','passport'],qs:[
   Q('mc','Where do planes take off and land?','airport','kitchen','garden','Planes take off and land at an airport.',null,TT('هواپیماها کجا بلند می‌شوند و فرود می‌آیند؟','airport یعنی فرودگاه.','Uçaklar nerede kalkar ve iner?','Airport “havalimanı” demektir.')),
   Q('fill','You need a ___ to travel by train.','ticket','pencil','window','A ticket lets you travel by train, bus, or plane.',null,TT('برای سفر با قطار به ___ نیاز دارید.','ticket یعنی بلیت.','Trenle seyahat etmek için ___ gerekir.','Ticket “bilet” demektir.')),
@@ -321,6 +333,7 @@ const LV=[
   B('Put the words in order.',['The','train','leaves','at','nine'],'With "the train", the verb takes -s: leaves.','train',TT(BQ[0],'The train leaves at nine یعنی قطار ساعت نه حرکت می‌کند.',BQ[1],'The train leaves at nine “Tren dokuzda kalkar” demektir.')),
   B('Put the words in order.',['I','need','a','map','of','the','city'],'First "I need", then "a map", then "of the city".','map',TT(BQ[0],'I need a map of the city یعنی من به یک نقشه‌ی شهر نیاز دارم.',BQ[1],'I need a map of the city “Şehrin bir haritasına ihtiyacım var” demektir.'))]},
  {n:'Past simple',nn:{tr:'Geçmiş zaman',fa:'گذشته‌ی ساده'},cefr:'A2+',sky:['#0a2a3a','#134b5e','#2a6f73'],hl:['#1d5c66','#1f7a78','#2c8f7a'],
+  rule:{en:'Past Simple: irregular verbs change form (go→went, eat→ate, see→saw). Questions use "did": "What did she buy?"',fa:'گذشته‌ی ساده: افعال بی‌قاعده شکل عوض می‌کنند (go→went, eat→ate, see→saw). سؤال با did ساخته می‌شود: "What did she buy?"',tr:'Geçmiş zaman: düzensiz fiiller şekil değiştirir (go→went, eat→ate, see→saw). Sorularda "did" kullanılır: "What did she buy?"'},
   words:['went','ate','saw','bought','yesterday','last'],qs:[
   Q('fill','Yesterday I ___ to the park.','went','go','going','"Went" is the past of "go".',null,TT('دیروز من به پارک ___.','went گذشته‌ی go است، یعنی رفتم.','Dün parka ___.','Went, go fiilinin geçmişidir: gittim.')),
   Q('fill','She ___ a sandwich for lunch.','ate','eat','eating','"Ate" is the past of "eat".',null,TT('او برای ناهار ساندویچ ___.','ate گذشته‌ی eat است، یعنی خورد.','O öğle yemeğinde sandviç ___.','Ate, eat fiilinin geçmişidir: yedi.')),
@@ -338,7 +351,43 @@ const LV=[
   Q('mc','Which question fits "She bought a car"?','What did she buy?','What does she buy?','What she bought?','Past questions use did + the base verb.',null,TT('کدام سؤال برای «She bought a car» مناسب است؟','سؤال گذشته با did و فعل ساده ساخته می‌شود.','“She bought a car” için hangi soru uygun?','Geçmiş zaman soruları did + yalın fiil ile kurulur.')),
   B('Put the words in order.',['I','went','to','school','yesterday'],'Subject, past verb, place, then time.','went',TT(BQ[0],'I went to school yesterday یعنی دیروز به مدرسه رفتم.',BQ[1],'I went to school yesterday “Dün okula gittim” demektir.')),
   B('Put the words in order.',['She','ate','an','apple','last','night'],'Subject, past verb, thing, then time.','ate',TT(BQ[0],'She ate an apple last night یعنی او دیشب یک سیب خورد.',BQ[1],'She ate an apple last night “O dün gece bir elma yedi” demektir.')),
-  B('Put the words in order.',['We','saw','a','big','bird'],'Subject, past verb, then the thing we saw.','saw',TT(BQ[0],'We saw a big bird یعنی ما یک پرنده‌ی بزرگ دیدیم.',BQ[1],'We saw a big bird “Büyük bir kuş gördük” demektir.'))]}
+  B('Put the words in order.',['We','saw','a','big','bird'],'Subject, past verb, then the thing we saw.','saw',TT(BQ[0],'We saw a big bird یعنی ما یک پرنده‌ی بزرگ دیدیم.',BQ[1],'We saw a big bird “Büyük bir kuş gördük” demektir.'))]},
+ {n:'Present Perfect',nn:{tr:'Yakın geçmiş zaman',fa:'حال کامل'},cefr:'B1',sky:['#2a1a4a','#6a3f8a','#c98fd0'],hl:['#4a2f6a','#6a4a8a','#8a5fa0'],
+  rule:{en:'Present Perfect: have/has + past participle, for experiences and recent events: "I have visited Paris." Use ever, never, already, just, yet.',fa:'حال کامل: have/has + قسمت سوم فعل، برای تجربه‌ها و اتفاقات اخیر: "I have visited Paris." با ever, never, already, just, yet به کار می‌رود.',tr:'Yakın geçmiş zaman: have/has + fiilin 3. hali, deneyimler ve son olaylar için: "I have visited Paris." ever, never, already, just, yet ile kullanılır.'},
+  words:['ever','already','just','yet','never','finished'],qs:[
+  Q('mc','Which word often comes before a past participle after "have"?','already','yesterday','tomorrow','"Already" is common with the Present Perfect: "I have already finished."',null,TT('کدام کلمه معمولاً بعد از have و قبل از قسمت سوم فعل می‌آید؟','already یعنی قبلاً. "I have already finished" یعنی من قبلاً تمام کرده‌ام.','"Have" fiilinden sonra ve geçmiş ortaçtan önce hangi kelime sık gelir?','Already “zaten” demektir. "I have already finished" “Zaten bitirdim” demektir.')),
+  Q('mc','"I ___ never been to Japan." Which word fits?','have','has','had','With I, use "have": I have never been to Japan.',null,TT('"I ___ never been to Japan." کدام کلمه مناسب است؟','با I از have استفاده می‌کنیم: I have never been to Japan یعنی من هرگز به ژاپن نرفته‌ام.','"I ___ never been to Japan." Hangi kelime uyar?','I ile "have" kullanılır: I have never been to Japan “Hiç Japonya’ya gitmedim” demektir.')),
+  Q('mc','Choose the past participle of "see".','seen','saw','seeing','The past participle of see is seen: I have seen that movie.',null,TT('قسمت سوم فعل see را انتخاب کن.','قسمت سوم see می‌شود seen: I have seen that movie یعنی من آن فیلم را دیده‌ام.','"See" fiilinin geçmiş ortacını seç.','See fiilinin geçmiş ortacı seen’dir: I have seen that movie “O filmi gördüm” demektir.')),
+  Q('mc','"She ___ just arrived." Which word fits?','has','have','is','With she/he/it, use "has": She has just arrived.',null,TT('"She ___ just arrived." کدام کلمه مناسب است؟','با she/he/it از has استفاده می‌کنیم: She has just arrived یعنی او همین الان رسید.','"She ___ just arrived." Hangi kelime uyar?','She/he/it ile "has" kullanılır: She has just arrived “O az önce geldi” demektir.')),
+  Q('mc','Which word means "at any time before now"?','ever','never','always','"Ever" asks about any time before now: Have you ever been to Italy?',null,TT('کدام کلمه یعنی «هر زمان قبل از الان»؟','ever یعنی تا به حال. Have you ever been to Italy؟ یعنی آیا تا به حال به ایتالیا رفته‌ای؟','Hangi kelime “şimdiden önce herhangi bir zaman” demektir?','Ever “hiç” demektir. Have you ever been to Italy? “Hiç İtalya’ya gittin mi?” demektir.')),
+  Q('mc','Past participle of "eat"?','eaten','ate','eating','The past participle of eat is eaten: I have eaten already.',null,TT('قسمت سوم فعل eat چیست؟','قسمت سوم eat می‌شود eaten: I have eaten already یعنی من قبلاً غذا خورده‌ام.','"Eat" fiilinin geçmiş ortacı nedir?','Eat fiilinin geçmiş ortacı eaten’dir: I have eaten already “Zaten yedim” demektir.')),
+  Q('fill','I have ___ finished my homework.','already','yesterday','tomorrow','"Already" shows something happened before now.',null,TT('من ___ تکالیفم را تمام کرده‌ام.','already یعنی قبلاً، نشان‌دهنده‌ی کاری که قبل از الان انجام شده.','Ödevimi ___ bitirdim.','Already “zaten”, şimdiden önce olan bir şeyi gösterir.')),
+  Q('fill','Have you ___ visited Paris?','ever','never','always','"Ever" is used in questions about experience.',null,TT('آیا تا به حال پاریس را ___ دیده‌ای؟','ever در سؤال‌های مربوط به تجربه به کار می‌رود.','Hiç Paris’i ___ ziyaret ettin mi?','Ever, deneyim hakkındaki sorularda kullanılır.')),
+  Q('fill','She has ___ been to London — this is her first time.','never','already','just','"Never" means not at any time.',null,TT('او ___ به لندن نرفته — این اولین بار اوست.','never یعنی هرگز، یعنی هیچ‌وقت.','Hiç Londra’ya ___ gitmedi — bu onun ilk seferi.','Never “hiç” demektir, hiçbir zaman anlamına gelir.')),
+  Q('fill','We have ___ finished the project — look, here it is!','just','yesterday','tomorrow','"Just" means a very short time ago.',null,TT('ما همین ___ پروژه را تمام کردیم — ببین، اینجاست!','just یعنی همین الان، مدت زمان خیلی کوتاهی پیش.','Projeyi ___ bitirdik — bak, işte burada!','Just “az önce” demektir, çok kısa bir süre önce anlamına gelir.')),
+  Q('fill','He has not called me ___.','yet','already','ever','"Yet" is used in negative sentences to mean "until now".',null,TT('او هنوز با من تماس نگرفته ___.','yet در جمله‌های منفی به معنای «تا الان» به کار می‌رود.','Beni ___ aramadı.','Yet, olumsuz cümlelerde “şimdiye kadar” anlamında kullanılır.')),
+  Q('fill','They have ___ their homework.','finished','finish','finishing','After "have", use the past participle: finished.',null,TT('آن‌ها تکالیفشان را ___ کرده‌اند.','بعد از have از قسمت سوم فعل استفاده می‌کنیم: finished.','Ödevlerini ___.','"Have"dan sonra geçmiş ortaç kullanılır: finished.')),
+  B('Put the words in order.',['I','have','never','travelled','to','Spain'],'Subject + have + never + past participle + place.','travelled',TT(BQ[0],'I have never travelled to Spain یعنی من هرگز به اسپانیا نرفته‌ام.',BQ[1],'I have never travelled to Spain “Hiç İspanya’ya gitmedim” demektir.')),
+  B('Put the words in order.',['She','has','already','finished','her','homework'],'Subject + has + already + past participle.','finished',TT(BQ[0],'She has already finished her homework یعنی او قبلاً تکالیفش را تمام کرده.',BQ[1],'She has already finished her homework “Ödevini zaten bitirdi” demektir.')),
+  B('Put the words in order.',['Have','you','ever','seen','a','whale'],'Question: Have + subject + ever + past participle.','seen',TT(BQ[0],'Have you ever seen a whale؟ یعنی آیا تا به حال نهنگ دیده‌ای؟',BQ[1],'Have you ever seen a whale? “Hiç balina gördün mü?” demektir.'))]},
+ {n:'Comparatives & Modals',nn:{tr:'Karşılaştırma ve kipler',fa:'مقایسه و افعال وجهی'},cefr:'B1',sky:['#1a3a4a','#2f6a6a','#6ab08a'],hl:['#2a5a5a','#3f8a7a','#5fa06a'],
+  rule:{en:'Comparatives/superlatives: bigger, the biggest. Modal verbs: should (advice), must (obligation), might (possibility).',fa:'صفت تفضیلی/عالی: bigger، the biggest. افعال وجهی: should (توصیه)، must (الزام)، might (احتمال).',tr:'Karşılaştırma/üstünlük: bigger, the biggest. Kipler: should (öğüt), must (zorunluluk), might (olasılık).'},
+  words:['bigger','biggest','should','must','might','faster'],qs:[
+  Q('mc','Which is the comparative form of "big"?','bigger','biggest','big','Add -er for comparatives with short adjectives: bigger.',null,TT('کدام شکل تفضیلی big است؟','برای صفت‌های کوتاه er اضافه می‌کنیم: bigger.','"Big" kelimesinin karşılaştırma hali hangisi?','Kısa sıfatlara -er eklenir: bigger.')),
+  Q('mc','Which is the superlative form of "big"?','biggest','bigger','big','Add -est + "the" for superlatives: the biggest.',null,TT('کدام شکل عالی big است؟','برای صفت عالی the + est اضافه می‌کنیم: the biggest.','"Big" kelimesinin üstünlük hali hangisi?','Üstünlük için the + -est eklenir: the biggest.')),
+  Q('mc','Which modal verb expresses strong obligation?','must','might','should','"Must" shows strong obligation or necessity.',null,TT('کدام فعل وجهی الزام قوی را نشان می‌دهد؟','must یعنی باید، الزام یا ضرورت قوی را نشان می‌دهد.','Hangi kip güçlü zorunluluk ifade eder?','Must, güçlü bir zorunluluk veya gereklilik gösterir.')),
+  Q('mc','Which modal verb gives advice?','should','must','might','"Should" is used to give advice.',null,TT('کدام فعل وجهی برای توصیه به کار می‌رود؟','should برای دادن توصیه به کار می‌رود.','Hangi kip öğüt vermek için kullanılır?','Should, öğüt vermek için kullanılır.')),
+  Q('mc','Which modal verb shows possibility, not certainty?','might','must','should','"Might" shows something is possible but not certain.',null,TT('کدام فعل وجهی احتمال را نشان می‌دهد، نه قطعیت را؟','might یعنی احتمال دارد ولی قطعی نیست.','Hangi kip kesinlik değil, olasılık gösterir?','Might, bir şeyin mümkün ama kesin olmadığını gösterir.')),
+  Q('mc','Comparative form of "fast"?','faster','fastest','fast','Add -er for short adjectives: faster.',null,TT('شکل تفضیلی fast چیست؟','برای صفت‌های کوتاه er اضافه می‌کنیم: faster.','"Fast" kelimesinin karşılaştırma hali nedir?','Kısa sıfatlara -er eklenir: faster.')),
+  Q('fill','This car is ___ than that one.','faster','fast','fastest','Use -er to compare two things: faster than.',null,TT('این ماشین ___ از آن یکی است.','برای مقایسه‌ی دو چیز er اضافه می‌کنیم: faster than.','Bu araba diğerinden daha ___.','İki şeyi karşılaştırmak için -er eklenir: faster than.')),
+  Q('fill','Everest is the ___ mountain in the world.','biggest','bigger','big','Use the + -est for the top one in a group: the biggest.',null,TT('اورست ___ کوه دنیاست.','برای بالاترین در یک گروه the + est اضافه می‌کنیم: the biggest.','Everest dünyadaki en ___ dağdır.','Bir grupta en üst olanı için the + -est eklenir: the biggest.')),
+  Q('fill','You ___ study before the exam. It is important!','should','might','faster','"Should" gives advice.',null,TT('تو ___ قبل از امتحان درس بخوانی. مهم است!','should برای دادن توصیه به کار می‌رود.','Sınavdan önce ___ çalışmalısın. Bu önemli!','Should, öğüt vermek için kullanılır.')),
+  Q('fill','You ___ wear a seatbelt — it is the law.','must','might','bigger','"Must" shows a strong rule or obligation.',null,TT('تو ___ کمربند ایمنی ببندی — این قانون است.','must یک قانون یا الزام قوی را نشان می‌دهد.','Emniyet kemeri takman ___ — bu bir kanun.','Must, güçlü bir kural veya zorunluluk gösterir.')),
+  Q('fill','It ___ rain later — I am not sure.','might','must','should','"Might" shows uncertainty about the future.',null,TT('بعداً ممکن است باران ___ — مطمئن نیستم.','might عدم قطعیت درباره‌ی آینده را نشان می‌دهد.','Sonra yağmur ___ — emin değilim.','Might, gelecek hakkında belirsizlik gösterir.')),
+  Q('fill','My brother is ___ than me.','bigger','biggest','big','Use -er to compare two people: bigger than.',null,TT('برادرم ___ از من است.','برای مقایسه‌ی دو نفر er اضافه می‌کنیم: bigger than.','Kardeşim benden daha ___.','İki kişiyi karşılaştırmak için -er eklenir: bigger than.')),
+  B('Put the words in order.',['This','phone','is','faster','than','mine'],'Subject + is + comparative + than + object.','faster',TT(BQ[0],'This phone is faster than mine یعنی این گوشی از مال من سریع‌تر است.',BQ[1],'This phone is faster than mine “Bu telefon benimkinden daha hızlı” demektir.')),
+  B('Put the words in order.',['You','should','drink','more','water'],'Subject + should + base verb + object.','should',TT(BQ[0],'You should drink more water یعنی باید آب بیشتری بنوشی.',BQ[1],'You should drink more water “Daha fazla su içmelisin” demektir.')),
+  B('Put the words in order.',['It','might','rain','this','afternoon'],'Subject + might + base verb + time.','might',TT(BQ[0],'It might rain this afternoon یعنی ممکن است امروز بعدازظهر باران ببارد.',BQ[1],'It might rain this afternoon “Bu öğleden sonra yağmur yağabilir” demektir.'))]}
 ];
 let qsel=[];
 
@@ -361,7 +410,7 @@ const BF=Array.from({length:14},(_,i)=>({x:300+i*370,y:GY-70-(i*23%50),p:i*2.3,c
 
 let p,hearts,coinN,coinTot,coinL,slimes,wtok,parts=[],shake=0,score,corr,asked,seen,cpDone,toast={t:0,s:''},winT=0,celeT=0,birds=[],combo=0,pw={sh:0,mag:0,dj:0},pus=[],wrongRun=new Set(),vfrom='menu',bossOn=false,bs={},prac=false,lastOk=0,bossPool=[],coinLast=-9,coinStreak=0;
 const BOSSX=4950;
-const NIGHT=[0,0,0,1,0,1];
+const NIGHT=[0,0,0,1,0,1,1,1];
 const mult=c=>c>=4?3:c>=2?2:1;
 function reset(i){
   cur=i;qsel=lru(LV[i].qs).sort((a,b)=>(sv.vocab[b.w]?1:0)-(sv.vocab[a.w]?1:0)).slice(0,CP.length);qsel.forEach(use);save();
@@ -382,7 +431,16 @@ function reset(i){
 }
 
 /* ---------- screens ---------- */
-const SC=['menu','pause','qz','res','vb'];
+const SC=['menu','pause','qz','res','vb','rule'];
+let ruleIdx=0;
+function openRuleCard(i){ruleIdx=i;const l=LV[i];
+  $('ruh').textContent=tx('level')+' '+(i+1)+': '+ln(l);
+  $('rucefr').textContent=l.cefr;
+  const rt=(l.rule&&l.rule[sv.lang])||(l.rule&&l.rule.en)||'';
+  $('rutx').innerHTML='<b>'+tx('ruleT')+':</b><br>'+rt;
+  show('rule');
+}
+$('rugo').onclick=()=>start(ruleIdx);$('ruback').onclick=menu;
 const SCT={};
 function show(id){SC.forEach(s=>{const e=$(s);clearTimeout(SCT[s]);
   if(s===id){e.classList.remove('out');e.classList.add('on');}
@@ -433,7 +491,7 @@ function menu(){state='menu';relAll();ctl(0);
   const box=$('lv');box.innerHTML='';
   LV.forEach((l,i)=>{const b=document.createElement('button'),open=i<sv.unlocked;b.className='lvb';b.disabled=!open;
     b.innerHTML=`<b>${tx('level')} ${i+1}</b><span>${ln(l)}</span><small>${open?l.cefr+(sv.best[i+1]?' · '+tx('best')+' '+sv.best[i+1]:' · '+tx('newl')):tx('locked')}</small>${open&&sv.stars[i+1]?'<span class="stl">'+'★'.repeat(sv.stars[i+1])+'☆'.repeat(3-sv.stars[i+1])+'</span>':''}`;
-    b.onclick=()=>start(i);box.appendChild(b);});
+    b.onclick=()=>openRuleCard(i);box.appendChild(b);});
   $('vbtn').textContent='📒 '+tx('wordsT')+' ('+Object.keys(sv.vocab).length+')';
   show('menu');
 }
@@ -458,7 +516,7 @@ function start(i){
 }
 $('sn').onclick=()=>setMute(!sv.mute);$('M').onclick=()=>setMute(!sv.mute);
 $('mu').onclick=()=>{sv.music=sv.music?0:1;$('mu').textContent=tx(sv.music?'musOn':'musOff');save();};$('gq').onclick=()=>{sv.gq=sv.gq==='auto'?'high':sv.gq==='high'?'low':'auto';hq=sv.gq!=='low';gfxFa=gfxFn=0;gfxLabel();save();};$('P').onclick=pause;$('rs').onclick=resume;$('rt').onclick=()=>start(cur);$('mn').onclick=menu;
-$('rp').onclick=()=>start(cur);$('rn').onclick=()=>start(cur+1);$('rmn').onclick=menu;
+$('rp').onclick=()=>start(cur);$('rn').onclick=()=>openRuleCard(cur+1);$('rmn').onclick=menu;
 
 /* ---------- quiz ---------- */
 const qk=q=>q.q+'|'+q.a,use=q=>{sv.hist[qk(q)]=++sv.runN;},lru=a=>shuffle(a.slice()).sort((x,y)=>(sv.hist[qk(x)]||0)-(sv.hist[qk(y)]||0));
@@ -536,7 +594,9 @@ function endPractice(){prac=false;state=vfrom==='res'?'res':'menu';hush();openVo
 function startBoss(){
   state='boss';relAll();ctl(0);p.vx=0;p.vy=0;bossOn=true;
   bs.ph='in';bs.t=0;bs.x=p.x+200;bs.y=-90;bs.vy=0;bs.land=0;bs.hp=bs.max;bs.flash=0;bs.dx=0;
-  bossPool=lru(LV[cur].qs.filter(q=>!qsel.includes(q))).reverse();
+  const ownPool=lru(LV[cur].qs.filter(q=>!qsel.includes(q)));
+  const priorWeak=cur>0?lru(LV.slice(0,cur).flatMap(l=>l.qs).filter(q=>sv.vocab[q.w])).slice(0,2):[];
+  bossPool=shuffle(ownPool.concat(priorWeak)).reverse();
   toast.t=2.6;toast.s=tx('bossIn');sfx(110,.6,'sawtooth',.07,50);
 }
 function askBoss(){
